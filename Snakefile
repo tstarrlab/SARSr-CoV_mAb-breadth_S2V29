@@ -29,11 +29,6 @@ def nb_markdown(nb):
     return os.path.join(config['summary_dir'],
                         os.path.basename(os.path.splitext(nb)[0]) + '.md')
 
-# Global variables extracted from config --------------------------------------
-pacbio_runs = (pd.read_csv(config['pacbio_runs'], dtype = str)
-               .assign(pacbioRun=lambda x: x['library'] + '_' + x['run'])
-               )
-assert len(pacbio_runs['pacbioRun'].unique()) == len(pacbio_runs['pacbioRun'])
 
 # Information on samples and barcode runs -------------------------------------
 barcode_runs = pd.read_csv(config['barcode_runs'])
@@ -46,6 +41,7 @@ rule make_summary:
     """Create Markdown summary of analysis."""
     input:
         dag=os.path.join(config['summary_dir'], 'dag.svg'),
+        env='environment_pinned.yml',
         SARSr_lib61_get_mut_bind_expr=config['SARSr_lib61_mut_bind_expr'],
         variant_counts_file=config['variant_counts_file'],
         count_variants=nb_markdown('count_variants.ipynb'),

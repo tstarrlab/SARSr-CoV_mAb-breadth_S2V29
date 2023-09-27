@@ -62,7 +62,7 @@ targets_ordered:
   - Khosta-2
   - RhGB01
   - RhGB03
-  - RhGB02-230B
+  - RhGB02_230B
   - RsYN04
   - AncAsia_MAP
   - AncAsia_alt
@@ -159,7 +159,7 @@ EurAf_extant:
   - Khosta-2
   - RhGB01
   - RhGB03
-  - RhGB02-230B
+  - RhGB02_230B
     
 RsYN04_extant:
   - RsYN04
@@ -277,7 +277,7 @@ ancestors_MAP_v_alt:
 
 targets_low_bc:
   - RhGB03
-  - RhGB02-230B
+  - RhGB02_230B
   - BtSY1-RtLS01
   - Rc-kw8
   - Rc-os20

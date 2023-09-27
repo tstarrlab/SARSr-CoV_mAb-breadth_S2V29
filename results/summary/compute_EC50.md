@@ -1,17 +1,13 @@
----
-title: "Compute per-barcode binding to vaccinated mouse sera samples"
-author: "Tyler Starr"
-date: "9/26/2023"
-output:
-  github_document:
-    html_preview: false
-editor_options: 
-  chunk_output_type: inline
----
+Compute per-barcode binding to vaccinated mouse sera samples
+================
+Tyler Starr
+9/26/2023
 
-This notebook reads in per-barcode counts from `count_variants.ipynb` for mAb-binding titration experiments, computes EC50, and does some basic QC.
+This notebook reads in per-barcode counts from `count_variants.ipynb`
+for mAb-binding titration experiments, computes EC50, and does some
+basic QC.
 
-```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+``` r
 #list of packages to install/load
 packages = c("yaml","data.table","tidyverse","gridExtra")
 #install any packages not already installed
@@ -35,15 +31,58 @@ if(!file.exists(config$mAb_EC50_dir)){
   dir.create(file.path(config$mAb_EC50_dir))
 }
 ```
+
 Session info for reproducing environment:
-```{r print_sessionInfo}
+
+``` r
 sessionInfo()
 ```
 
-## Setup
-First, we will read in metadata on our sort samples, the table giving number of reads of each barcode in each of the sort bins, and the barcode-variant lookup tables, and merge these tables together.
+    ## R version 4.1.3 (2022-03-10)
+    ## Platform: x86_64-pc-linux-gnu (64-bit)
+    ## Running under: Rocky Linux 8.8 (Green Obsidian)
+    ## 
+    ## Matrix products: default
+    ## BLAS/LAPACK: /uufs/chpc.utah.edu/sys/spack/linux-rocky8-nehalem/gcc-8.5.0/intel-oneapi-mkl-2021.4.0-h43nkmwzvaltaa6ii5l7n6e7ruvjbmnv/mkl/2021.4.0/lib/intel64/libmkl_rt.so.1
+    ## 
+    ## locale:
+    ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+    ##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+    ##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+    ##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+    ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+    ## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ##  [1] gridExtra_2.3     forcats_0.5.1     stringr_1.4.0     dplyr_1.0.8      
+    ##  [5] purrr_0.3.4       readr_2.1.2       tidyr_1.2.0       tibble_3.1.6     
+    ##  [9] ggplot2_3.4.1     tidyverse_1.3.1   data.table_1.14.2 yaml_2.3.5       
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] tidyselect_1.1.2 xfun_0.30        haven_2.4.3      colorspace_2.0-3
+    ##  [5] vctrs_0.5.2      generics_0.1.2   htmltools_0.5.2  utf8_1.2.2      
+    ##  [9] rlang_1.0.6      pillar_1.7.0     glue_1.6.2       withr_2.5.0     
+    ## [13] DBI_1.1.2        dbplyr_2.1.1     modelr_0.1.8     readxl_1.3.1    
+    ## [17] lifecycle_1.0.3  munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0
+    ## [21] rvest_1.0.2      evaluate_0.15    knitr_1.37       tzdb_0.2.0      
+    ## [25] fastmap_1.1.0    fansi_1.0.2      broom_0.7.12     Rcpp_1.0.11     
+    ## [29] backports_1.4.1  scales_1.2.1     jsonlite_1.8.7   fs_1.5.2        
+    ## [33] hms_1.1.1        digest_0.6.29    stringi_1.7.6    grid_4.1.3      
+    ## [37] cli_3.6.0        tools_4.1.3      magrittr_2.0.2   crayon_1.5.0    
+    ## [41] pkgconfig_2.0.3  ellipsis_0.3.2   xml2_1.3.3       reprex_2.0.1    
+    ## [45] lubridate_1.8.0  rstudioapi_0.13  assertthat_0.2.1 rmarkdown_2.13  
+    ## [49] httr_1.4.7       R6_2.5.1         compiler_4.1.3
 
-```{r input_data}
+## Setup
+
+First, we will read in metadata on our sort samples, the table giving
+number of reads of each barcode in each of the sort bins, and the
+barcode-variant lookup tables, and merge these tables together.
+
+``` r
 #read dataframe with list of barcode runs
 barcode_runs <- read.csv(file=config$barcode_runs,stringsAsFactors=F); barcode_runs <- subset(barcode_runs, select=-c(R1))
 
@@ -82,12 +121,13 @@ samples_S3L17_UCA <- data.frame(sample=sort(unique(paste(rep("S3L17_UCA",6),form
 samples_S2V29_UCA <- data.frame(sample=sort(unique(paste(rep("S2V29_UCA",6),formatC(barcode_runs[barcode_runs$sample_type=="S2V29_UCA","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 
 samples_S309_887 <- data.frame(sample=sort(unique(paste(rep("S309_887",6),formatC(barcode_runs[barcode_runs$sample_type=="S309_887","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
-
 ```
 
- Convert from Illumina read counts to estimates of the number of cells that were sorted into a bin, and add some other useful information to our data frame.
- 
-```{r downweight_counts_by_cells}
+Convert from Illumina read counts to estimates of the number of cells
+that were sorted into a bin, and add some other useful information to
+our data frame.
+
+``` r
 #for each bin, normalize the read counts to the observed ratio of cell recovery among bins
 for(i in 1:nrow(barcode_runs)){
   lib <- as.character(barcode_runs$library[i])
@@ -101,7 +141,226 @@ for(i in 1:nrow(barcode_runs)){
     print(paste("read:cell ratio for",lib,bin,"is",ratio))
   }
 }
+```
 
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_01_bin1 is 11.5902247899293"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_01_bin2 is 11.2408513977271"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_01_bin3 is 9.45383141431753"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_01_bin4 is 11.2879779622982"
+    ## [1] "reads < cells for lib61_SARSr-wts S2K146_02_bin1 , un-normalized (ratio 0.000301178745076539 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_02_bin2 is 10.5953975926859"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_02_bin3 is 8.94481517431044"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_02_bin4 is 1.79074475542456"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_03_bin1 is 12.2576611441201"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_03_bin2 is 25.7545589235629"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_03_bin3 is 10.1633947543687"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_03_bin4 is 11.1132879117556"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_04_bin1 is 11.0934235610207"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_04_bin2 is 12.9514942957029"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_04_bin3 is 12.7062533970306"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_04_bin4 is 357"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_05_bin1 is 11.9038795525901"
+    ## [1] "reads < cells for lib61_SARSr-wts S2K146_05_bin2 , un-normalized (ratio 0.00249938831574677 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_05_bin3 is 116"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_05_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_06_bin1 is 5.31556145821455"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_06_bin2 is 8.43773167949815"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_06_bin3 is 2.92307692307692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_06_bin4 is 14.0714285714286"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_01_bin1 is 9.00797341516069"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_01_bin2 is 9.01888955916687"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_01_bin3 is 22.8886012127819"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_01_bin4 is 13.5969210291089"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_02_bin1 is 12.1319263449794"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_02_bin2 is 11.8968054938672"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_02_bin3 is 40.0612064054687"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_02_bin4 is 12.1272570540863"
+    ## [1] "reads < cells for lib61_SARSr-wts S3L17_03_bin1 , un-normalized (ratio 0.00070299275930549 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_03_bin2 is 11.9494628360313"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_03_bin3 is 20.8943978879578"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_03_bin4 is 13.3733518633141"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_04_bin1 is 9.83707382074961"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_04_bin2 is 16.2528118777937"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_04_bin3 is 19.4530281480853"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_04_bin4 is 57.75"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_05_bin1 is 10.9955218888804"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_05_bin2 is 16.6378164998604"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_05_bin3 is 59"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_05_bin4 is 88"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_06_bin1 is 5.31556145821455"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_06_bin2 is 8.43773167949815"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_06_bin3 is 2.92307692307692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_06_bin4 is 14.0714285714286"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_01_bin1 is 24.9016155479691"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_01_bin2 is 12.2765524517685"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_01_bin3 is 8.79659238048519"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_01_bin4 is 11.0479658002309"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_02_bin1 is 18.3814044144761"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_02_bin2 is 13.1128364877834"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_02_bin3 is 11.3946287854354"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_02_bin4 is 13.116997764396"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_03_bin1 is 12.2802094001056"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_03_bin2 is 13.9014236637213"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_03_bin3 is 13.080397052407"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_03_bin4 is 13.082512453194"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_04_bin1 is 2.17855942771377"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_04_bin2 is 13.4419528147629"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_04_bin3 is 14.0727100404939"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_04_bin4 is 43.9259259259259"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_05_bin1 is 12.7785091047364"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_05_bin2 is 10.1009221293986"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_05_bin3 is 68.2237762237762"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_05_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_06_bin1 is 5.31556145821455"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_06_bin2 is 8.43773167949815"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_06_bin3 is 2.92307692307692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_06_bin4 is 14.0714285714286"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_01_bin1 is 8.4351437939579"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_01_bin2 is 10.6753478867501"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_01_bin3 is 10.5449322639628"
+    ## [1] "reads < cells for lib61_SARSr-wts S2K146_v860_01_bin4 , un-normalized (ratio 0.0290216402451801 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_02_bin1 is 16.3906000230715"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_02_bin2 is 13.3711122910331"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_02_bin3 is 14.1069041241343"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_02_bin4 is 8.94616127824894"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_03_bin1 is 11.6258936676562"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_03_bin2 is 11.5274274482943"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_03_bin3 is 13.2949159281387"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_03_bin4 is 14.2907487590668"
+    ## [1] "reads < cells for lib61_SARSr-wts S2K146_v860_04_bin1 , un-normalized (ratio 0.0015639973497354 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_04_bin2 is 11.0666776542078"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_04_bin3 is 5.25768265837152"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_04_bin4 is 15.2682926829268"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_05_bin1 is 13.9689559598277"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_05_bin2 is 12.9287600178789"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_05_bin3 is 24"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_05_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_06_bin1 is 5.31556145821455"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_06_bin2 is 8.43773167949815"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_06_bin3 is 2.92307692307692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_v860_06_bin4 is 14.0714285714286"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_01_bin1 is 19.9352841868317"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_01_bin2 is 32.9200898988638"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_01_bin3 is 5.65032847967838"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_01_bin4 is 5.14702075517565"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_02_bin1 is 20.0414023757352"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_02_bin2 is 67.6291057068114"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_02_bin3 is 13.1318402792205"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_02_bin4 is 11.9038303810195"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_03_bin1 is 21.0893538979586"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_03_bin2 is 19.6042590949423"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_03_bin3 is 15.0321646132385"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_03_bin4 is 13.4877727453731"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_04_bin1 is 17.3160529657174"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_04_bin2 is 16.4884836967634"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_04_bin3 is 13.0155535224154"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_04_bin4 is 77.6"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_05_bin1 is 12.254523952404"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_05_bin2 is 12.410915627838"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_05_bin3 is 56.9160839160839"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_05_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_06_bin1 is 5.31556145821455"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_06_bin2 is 8.43773167949815"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_06_bin3 is 2.92307692307692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_v37_2_06_bin4 is 14.0714285714286"
+    ## [1] "reads < cells for lib61_SARSr-wts S2K146_UCA_01_bin1 , un-normalized (ratio 0.00123702303925958 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_01_bin2 is 5.53305076611637"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_01_bin3 is 5.28982291398679"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_01_bin4 is 5.30219725755824"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_02_bin1 is 5.07583662934263"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_02_bin2 is 4.6472247988605"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_02_bin3 is 4.05503694678091"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_02_bin4 is 4.11360423458025"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_03_bin1 is 3.54563605968236"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_03_bin2 is 4.56194634597595"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_03_bin3 is 4.47025898449647"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_03_bin4 is 6.15949157494887"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_04_bin1 is 4.80640394956466"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_04_bin2 is 4.95237653878885"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_04_bin3 is 7.9014400952845"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_04_bin4 is 976"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_05_bin1 is 5.08967644910757"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_05_bin2 is 3.99444350330341"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_05_bin3 is 9.88888888888889"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_05_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_06_bin1 is 5.21407475551897"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_06_bin2 is 12.7501352199217"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_06_bin3 is 23.9230769230769"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2K146_UCA_06_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_01_bin1 is 4.61708809694429"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_01_bin2 is 5.36942099448073"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_01_bin3 is 4.65962617689347"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_01_bin4 is 15.8288130650335"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_02_bin1 is 4.53938222841067"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_02_bin2 is 4.46505100051745"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_02_bin3 is 12.6502142245073"
+    ## [1] "reads < cells for lib61_SARSr-wts S3L17_UCA_02_bin4 , un-normalized (ratio 0.918367346938776 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_03_bin1 is 5.49392273635868"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_03_bin2 is 4.66570059446375"
+    ## [1] "reads < cells for lib61_SARSr-wts S3L17_UCA_03_bin3 , un-normalized (ratio 0.906976744186046 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_03_bin4 is 1.6969696969697"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_04_bin1 is 5.49431321385639"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_04_bin2 is 4.0058133499429"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_04_bin3 is 1.82608695652174"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_04_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_05_bin1 is 5.15665540464028"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_05_bin2 is 6.57092496986513"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_05_bin3 is 28.5714285714286"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_05_bin4 is 538"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_06_bin1 is 5.21407475551897"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_06_bin2 is 12.7501352199217"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_06_bin3 is 23.9230769230769"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S3L17_UCA_06_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_01_bin1 is 4.18879180151025"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_01_bin2 is 5.51601876683898"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_01_bin3 is 4.5634727378781"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_01_bin4 is 10.1365137614679"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_02_bin1 is 4.87870303602954"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_02_bin2 is 3.13235929780729"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_02_bin3 is 16.7152448200023"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_02_bin4 is 4.16666666666667"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_03_bin1 is 5.38235122781394"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_03_bin2 is 4.20485698029276"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_03_bin3 is 1.47058823529412"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_03_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_04_bin1 is 5.60435475842644"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_04_bin2 is 6.95995345467319"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_04_bin3 is 4.5"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_04_bin4 is 37.5"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_05_bin1 is 4.91682388286518"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_05_bin2 is 7.37569122870116"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_05_bin3 is 6.23529411764706"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_05_bin4 is 46"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_06_bin1 is 5.21407475551897"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_06_bin2 is 12.7501352199217"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_06_bin3 is 23.9230769230769"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S2V29_UCA_06_bin4 is Inf"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_01_bin1 is 4.3246323112405"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_01_bin2 is 4.41034031797416"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_01_bin3 is 5.30137155325809"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_01_bin4 is 5.10067004851531"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_02_bin1 is 4.2986055378965"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_02_bin2 is 4.41578633416075"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_02_bin3 is 5.72560668097001"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_02_bin4 is 5.03233128065826"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_03_bin1 is 4.28698451388136"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_03_bin2 is 4.03926585736547"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_03_bin3 is 5.53744553805896"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_03_bin4 is 4.41284589611558"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_04_bin1 is 4.61568571502685"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_04_bin2 is 4.76784518129643"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_04_bin3 is 5.62230478658873"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_04_bin4 is 78"
+    ## [1] "reads < cells for lib61_SARSr-wts S309_887_05_bin1 , un-normalized (ratio 0.00136871098468173 )"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_05_bin2 is 5.25354041474681"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_05_bin3 is 71.84"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_05_bin4 is 9.33333333333333"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_06_bin1 is 5.21407475551897"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_06_bin2 is 12.7501352199217"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_06_bin3 is 23.9230769230769"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_887_06_bin4 is Inf"
+
+``` r
 #annotate each barcode as to whether it's a homolog variant, wildtype, synonymous muts only, stop, nonsynonymous, >1 nonsynonymous mutations
 dt[,variant_class:=as.character(NA)]
 dt[n_codon_substitutions==0, variant_class := "wildtype"]
@@ -112,17 +371,23 @@ dt[n_aa_substitutions > 1 & !grepl("*",aa_substitutions,fixed=T), variant_class 
 
 #cast the data frame into wide format
 dt <- dcast(dt, library + barcode + target + variant_class + aa_substitutions + n_aa_substitutions ~ sample, value.var="count.norm")
-
 ```
 
 ## Calculating mean bin for each barcode at each sample concentration
-Next, for each barcode at each of the sera concentrations, calculate the "mean bin" response variable. This is calculated as a simple mean, where the value of each bin is the integer value of the bin (bin1=unbound, bin4=highly bound) -- because of how bins are defined, the mean fluorescence of cells in each bin are equally spaced on a log-normal scale, so mean bin correlates with simple mean fluorescence.
 
-We do not use the fluorescence boundaries of the FACS bins in our calculations here, but we provide them for posterity's sake below.
+Next, for each barcode at each of the sera concentrations, calculate the
+“mean bin” response variable. This is calculated as a simple mean, where
+the value of each bin is the integer value of the bin (bin1=unbound,
+bin4=highly bound) – because of how bins are defined, the mean
+fluorescence of cells in each bin are equally spaced on a log-normal
+scale, so mean bin correlates with simple mean fluorescence.
 
-``
+We do not use the fluorescence boundaries of the FACS bins in our
+calculations here, but we provide them for posterity’s sake below.
 
-```{r calculate_mean_bin}
+\`\`
+
+``` r
 #function that returns mean bin and sum of counts for four bins cell counts. Includes cutoffs for bimodal sample splits to filter out
 calc.meanbin <- function(vec, split13filter=0.4, split24filter=0.4, split14filter=0.2){
   total <- sum(vec)
@@ -236,9 +501,14 @@ for(i in 1:nrow(samples_S309_887)){ #iterate through titeseq sample (concentrati
 ```
 
 ## Fit binding curves
-We will calculate a simple EC50 metric across each barcode's titration series. We will also include a minimum cell count that is required for a meanbin estimate to be used in the titration fit, and a minimum number of concentrations with determined meanbin that is required for a titration to be reported. 
 
-```{r fit_titrations}
+We will calculate a simple EC50 metric across each barcode’s titration
+series. We will also include a minimum cell count that is required for a
+meanbin estimate to be used in the titration fit, and a minimum number
+of concentrations with determined meanbin that is required for a
+titration to be reported.
+
+``` r
 #For QC and filtering, output columns giving the average number of cells that were sampled for a barcode across the 6 sample concentrations, and a value for the number of meanbin estimates that were removed for being below the # of cells cutoff
 cutoff <- 2
 
@@ -467,15 +737,21 @@ dt[,c("EC50_S309_887","EC50_SE_S309_887","response_S309_887","baseline_S309_887"
                             count.vals=c(S309_887_01_totalcount,S309_887_02_totalcount,S309_887_03_totalcount,
                                          S309_887_04_totalcount,S309_887_05_totalcount,S309_887_06_totalcount)),
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
-
 ```
+
 ## QC and sanity checks
-We will do some QC to make sure we got good titration curves for most of our library barcodes. We will also spot check titration curves from across our measurement range, and spot check curves whose fit parameters hit the different boundary conditions of the fit variables.
 
-We successfully generated EC50 estimates for `r sum(!is.na(dt$EC50_S2K146))/length(!is.na(dt$EC50_S2K146))` of our S2K146 mAb measurements, `r sum(!is.na(dt$EC50_S3L17))/length(!is.na(dt$EC50_S3L17))` of the S3L17 mAb, `r sum(!is.na(dt$EC50_S2V29))/length(!is.na(dt$EC50_S2V29))` of S2V29, `r sum(!is.na(dt$EC50_S2K146_v860))/length(!is.na(dt$EC50_S2K146_v860))` of S2K146_v860, `r sum(!is.na(dt$EC50_S2V29_v37_2))/length(!is.na(dt$EC50_S2V29_v37_2))` of S2V29_v37_2, `r sum(!is.na(dt$EC50_S2K146_UCA))/length(!is.na(dt$EC50_S2K146_UCA))` of S2K146_UCA, `r sum(!is.na(dt$EC50_S3L17_UCA))/length(!is.na(dt$EC50_S3L17_UCA))` of S3L17_UCA, `r sum(!is.na(dt$EC50_S2V29_UCA))/length(!is.na(dt$EC50_S2V29_UCA))` of S2V29_UCA, `r sum(!is.na(dt$EC50_S309_887))/length(!is.na(dt$EC50_S309_887))` of S309_887.
+We will do some QC to make sure we got good titration curves for most of
+our library barcodes. We will also spot check titration curves from
+across our measurement range, and spot check curves whose fit parameters
+hit the different boundary conditions of the fit variables.
 
+We successfully generated EC50 estimates for 0.5245416 of our S2K146 mAb
+measurements, 0.7271454 of the S3L17 mAb, 0.7582442 of S2V29, 0.6035778
+of S2K146_v860, 0.7581169 of S2V29_v37_2, 0.7033677 of S2K146_UCA,
+0.6860517 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.497358 of S309_887.
 
-```{r plot_titration_functions}
+``` r
 #make functions that allow me to plot a titration for any given row from the counts data frames, for spot checking curves
 plot.titration <- function(row,mAb,output.text=F){
   y.vals <- c();for(sample in get(paste("samples_",mAb,sep=""))$sample){y.vals <- c(y.vals,paste(sample,"_meanbin",sep=""))};y.vals <- unlist(dt[row,y.vals,with=F])
@@ -504,7 +780,7 @@ plot.titration <- function(row,mAb,output.text=F){
 }
 ```
 
-```{r EC50_S2K146, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2K146>=10000)[1],"S2K146")
 plot.titration(which(dt$EC50_S2K146>=10000)[2],"S2K146")
@@ -515,11 +791,11 @@ plot.titration(which(dt$EC50_S2K146>1 & dt$EC50_S2K146<10)[3],"S2K146")
 plot.titration(which(dt$EC50_S2K146<0.5)[1],"S2K146")
 plot.titration(which(dt$EC50_S2K146<0.5)[2],"S2K146")
 plot.titration(which(dt$EC50_S2K146<0.5)[3],"S2K146")
-
 ```
 
+<img src="compute_EC50_files/figure-gfm/EC50_S2K146-1.png" style="display: block; margin: auto;" />
 
-```{r EC50_S3L17, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S3L17>=10000)[1],"S3L17")
 plot.titration(which(dt$EC50_S3L17>=10000)[2],"S3L17")
@@ -530,10 +806,11 @@ plot.titration(which(dt$EC50_S3L17>1 & dt$EC50_S3L17<10)[3],"S3L17")
 plot.titration(which(dt$EC50_S3L17<1)[1],"S3L17")
 plot.titration(which(dt$EC50_S3L17<1)[2],"S3L17")
 plot.titration(which(dt$EC50_S3L17<1)[3],"S3L17")
-
 ```
 
-```{r EC50_S2V29, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S3L17-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2V29>=10000)[1],"S2V29")
 plot.titration(which(dt$EC50_S2V29>=10000)[2],"S2V29")
@@ -544,10 +821,11 @@ plot.titration(which(dt$EC50_S2V29>1 & dt$EC50_S2V29<10)[3],"S2V29")
 plot.titration(which(dt$EC50_S2V29<0.5)[1],"S2V29")
 plot.titration(which(dt$EC50_S2V29<0.5)[2],"S2V29")
 plot.titration(which(dt$EC50_S2V29<0.5)[3],"S2V29")
-
 ```
 
-```{r EC50_S2K146_v860, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S2V29-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2K146_v860>=10000)[1],"S2K146_v860")
 plot.titration(which(dt$EC50_S2K146_v860>=10000)[2],"S2K146_v860")
@@ -558,10 +836,11 @@ plot.titration(which(dt$EC50_S2K146_v860>1 & dt$EC50_S2K146_v860<10)[3],"S2K146_
 plot.titration(which(dt$EC50_S2K146_v860<0.5)[1],"S2K146_v860")
 plot.titration(which(dt$EC50_S2K146_v860<0.5)[2],"S2K146_v860")
 plot.titration(which(dt$EC50_S2K146_v860<0.5)[3],"S2K146_v860")
-
 ```
 
-```{r EC50_S2V29_v37_2, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S2K146_v860-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2V29_v37_2>=10000)[1],"S2V29_v37_2")
 plot.titration(which(dt$EC50_S2V29_v37_2>=10000)[2],"S2V29_v37_2")
@@ -572,10 +851,11 @@ plot.titration(which(dt$EC50_S2V29_v37_2>1 & dt$EC50_S2V29_v37_2<10)[3],"S2V29_v
 plot.titration(which(dt$EC50_S2V29_v37_2<0.5)[1],"S2V29_v37_2")
 plot.titration(which(dt$EC50_S2V29_v37_2<0.5)[2],"S2V29_v37_2")
 plot.titration(which(dt$EC50_S2V29_v37_2<0.5)[3],"S2V29_v37_2")
-
 ```
 
-```{r EC50_S2K146_UCA, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S2V29_v37_2-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2K146_UCA>=10000)[1],"S2K146_UCA")
 plot.titration(which(dt$EC50_S2K146_UCA>=10000)[2],"S2K146_UCA")
@@ -586,10 +866,11 @@ plot.titration(which(dt$EC50_S2K146_UCA>1 & dt$EC50_S2K146_UCA<10)[3],"S2K146_UC
 plot.titration(which(dt$EC50_S2K146_UCA<0.5)[1],"S2K146_UCA")
 plot.titration(which(dt$EC50_S2K146_UCA<0.5)[2],"S2K146_UCA")
 plot.titration(which(dt$EC50_S2K146_UCA<0.5)[3],"S2K146_UCA")
-
 ```
 
-```{r EC50_S3L17_UCA, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S2K146_UCA-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S3L17_UCA>=10000)[1],"S3L17_UCA")
 plot.titration(which(dt$EC50_S3L17_UCA>=10000)[2],"S3L17_UCA")
@@ -600,11 +881,11 @@ plot.titration(which(dt$EC50_S3L17_UCA<500 & dt$EC50_S3L17_UCA<100)[3],"S3L17_UC
 plot.titration(which(dt$EC50_S3L17_UCA<100)[1],"S3L17_UCA")
 plot.titration(which(dt$EC50_S3L17_UCA<100)[2],"S3L17_UCA")
 plot.titration(which(dt$EC50_S3L17_UCA<100)[3],"S3L17_UCA")
-
 ```
 
+<img src="compute_EC50_files/figure-gfm/EC50_S3L17_UCA-1.png" style="display: block; margin: auto;" />
 
-```{r EC50_S2V29_UCA, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S2V29_UCA>=10000)[1],"S2V29_UCA")
 plot.titration(which(dt$EC50_S2V29_UCA>=10000)[2],"S2V29_UCA")
@@ -617,7 +898,9 @@ plot.titration(which(dt$EC50_S2V29_UCA<1000)[2],"S2V29_UCA")
 plot.titration(which(dt$EC50_S2V29_UCA<1000)[3],"S2V29_UCA")
 ```
 
-```{r EC50_S309_887, fig.width=8, fig.height=8, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+<img src="compute_EC50_files/figure-gfm/EC50_S2V29_UCA-1.png" style="display: block; margin: auto;" />
+
+``` r
 par(mfrow=c(3,3))
 plot.titration(which(dt$EC50_S309_887>=10000)[1],"S309_887")
 plot.titration(which(dt$EC50_S309_887>=10000)[2],"S309_887")
@@ -630,13 +913,21 @@ plot.titration(which(dt$EC50_S309_887<0.5)[2],"S309_887")
 plot.titration(which(dt$EC50_S309_887<0.5)[3],"S309_887")
 ```
 
+<img src="compute_EC50_files/figure-gfm/EC50_S309_887-1.png" style="display: block; margin: auto;" />
+
 ## Data filtering by fit quality
 
-Next, let's filter out poor fits using the value we previously computed, the *normalized* mean square residual (nMSR). This metric computes the residual between the observed response variable and that predicted from the titration fit, normalizes this residual by the response range of the titration fit (which is allowed to vary between 1.5 and 3 per the titration fits above), and computes the mean-square of these normalized residuals.
+Next, let’s filter out poor fits using the value we previously computed,
+the *normalized* mean square residual (nMSR). This metric computes the
+residual between the observed response variable and that predicted from
+the titration fit, normalizes this residual by the response range of the
+titration fit (which is allowed to vary between 1.5 and 3 per the
+titration fits above), and computes the mean-square of these normalized
+residuals.
 
 Distribution of the nMSR metric in each set of fits
 
-```{r nMSR_distribution, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png"}
+``` r
 par(mfrow=c(3,3))
 hist(dt$nMSR_S2K146,main="S2K146",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
 hist(dt$nMSR_S3L17,main="S3L17",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
@@ -647,11 +938,16 @@ hist(dt$nMSR_S2K146_UCA,main="S2K146_UCA",xlab="Response-normalized mean squared
 hist(dt$nMSR_S3L17_UCA,main="S3L17_UCA",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
 hist(dt$nMSR_S2V29_UCA,main="S2V29_UCA",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
 hist(dt$nMSR_S309_887,main="S309_887",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
-
 ```
 
-As we would expect, the MSR stat decreases with cell count, indicating that higher cell counts leads to better curve fits. Also show the cutoff I'm proposing for nMSR (20x median across all fits), legend gives percent of curve fits eliminated
-```{r nMSR_v_cell_count, fig.width=9, fig.height=9, fig.align="center",dpi=300,dev="png"}
+<img src="compute_EC50_files/figure-gfm/nMSR_distribution-1.png" style="display: block; margin: auto;" />
+
+As we would expect, the MSR stat decreases with cell count, indicating
+that higher cell counts leads to better curve fits. Also show the cutoff
+I’m proposing for nMSR (20x median across all fits), legend gives
+percent of curve fits eliminated
+
+``` r
 median.nMSR <- median(c(dt$nMSR_S2K146,dt$nMSR_S3L17,dt$nMSR_S2V29,dt$nMSR_S2K146_v860, dt$nMSR_S2V29_v37_2, dt$nMSR_S2K146_UCA, dt$nMSR_S3L17_UCA, dt$nMSR_S2V29_UCA, dt$nMSR_S309_887),na.rm=T)
 
 par(mfrow=c(3,3))
@@ -692,9 +988,12 @@ abline(h=20*median.nMSR,col="red",lty=2)
 legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S309_887 > 10*median.nMSR & !is.na(nMSR_S309_887),])/nrow(dt[!is.na(nMSR_S309_887),]),digits=3),"%"))
 ```
 
+<img src="compute_EC50_files/figure-gfm/nMSR_v_cell_count-1.png" style="display: block; margin: auto;" />
 
-Next, we will apply this filtering step on normalized MSR, removing curves with nMSR >20x the median across all experiments
-```{r filter_curves_by_nMSR}
+Next, we will apply this filtering step on normalized MSR, removing
+curves with nMSR \>20x the median across all experiments
+
+``` r
 dt[nMSR_S2K146 > 20*median.nMSR,c("EC50_S2K146","EC50_SE_S2K146","response_S2K146","baseline_S2K146") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
 
 dt[nMSR_S3L17 > 20*median.nMSR,c("EC50_S3L17","EC50_SE_S3L17","response_S3L17","baseline_S3L17") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
@@ -712,14 +1011,14 @@ dt[nMSR_S3L17_UCA > 20*median.nMSR,c("EC50_S3L17_UCA","EC50_SE_S3L17_UCA","respo
 dt[nMSR_S2V29_UCA > 20*median.nMSR,c("EC50_S2V29_UCA","EC50_SE_S2V29_UCA","response_S2V29_UCA","baseline_S2V29_UCA") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
 
 dt[nMSR_S309_887 > 20*median.nMSR,c("EC50_S309_887","EC50_SE_S309_887","response_S309_887","baseline_S309_887") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
-
 ```
 
 ## Final scores
 
-Let's visualize the EC50 binding measurements as violin plots for the different wildtype targets, for each serum metric.
+Let’s visualize the EC50 binding measurements as violin plots for the
+different wildtype targets, for each serum metric.
 
-```{r binding_distribution_vioplot_S2K146, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2K146),],aes(x=target,y=EC50_S2K146))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2K146 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -727,13 +1026,18 @@ p1 <- ggplot(dt[!is.na(EC50_S2K146),],aes(x=target,y=EC50_S2K146))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+    ## Warning: Groups with fewer than two data points have been dropped.
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2K146-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2K146.pdf",sep="")))
 ```
 
-
-```{r binding_distribution_vioplot_S3L17, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S3L17),],aes(x=target,y=EC50_S3L17))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -741,13 +1045,18 @@ p1 <- ggplot(dt[!is.na(EC50_S3L17),],aes(x=target,y=EC50_S3L17))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+    ## Warning: Groups with fewer than two data points have been dropped.
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S3L17-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S3L17.pdf",sep="")))
 ```
 
-
-```{r binding_distribution_vioplot_S2V29, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2V29),],aes(x=target,y=EC50_S2V29))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2V29 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -755,14 +1064,16 @@ p1 <- ggplot(dt[!is.na(EC50_S2V29),],aes(x=target,y=EC50_S2V29))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2V29-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2V29.pdf",sep="")))
 ```
 
-
-
-```{r binding_distribution_vioplot_S2K146_v860, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2K146_v860),],aes(x=target,y=EC50_S2K146_v860))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2K146_v860 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -770,12 +1081,18 @@ p1 <- ggplot(dt[!is.na(EC50_S2K146_v860),],aes(x=target,y=EC50_S2K146_v860))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+    ## Warning: Groups with fewer than two data points have been dropped.
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2K146_v860-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2K146_v860.pdf",sep="")))
 ```
 
-```{r binding_distribution_vioplot_S2V29_v37_2, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2V29_v37_2),],aes(x=target,y=EC50_S2V29_v37_2))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2V29_v37_2 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -783,13 +1100,16 @@ p1 <- ggplot(dt[!is.na(EC50_S2V29_v37_2),],aes(x=target,y=EC50_S2V29_v37_2))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2V29_v37_2-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2V29_v37_2.pdf",sep="")))
 ```
 
-
-```{r binding_distribution_vioplot_S2K146_UCA, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2K146_UCA),],aes(x=target,y=EC50_S2K146_UCA))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2K146_UCA EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -797,12 +1117,16 @@ p1 <- ggplot(dt[!is.na(EC50_S2K146_UCA),],aes(x=target,y=EC50_S2K146_UCA))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2K146_UCA-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2K146_UCA.pdf",sep="")))
 ```
 
-```{r binding_distribution_vioplot_S3L17_UCA, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S3L17_UCA),],aes(x=target,y=EC50_S3L17_UCA))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17_UCA EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -810,12 +1134,16 @@ p1 <- ggplot(dt[!is.na(EC50_S3L17_UCA),],aes(x=target,y=EC50_S3L17_UCA))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S3L17_UCA-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S3L17_UCA.pdf",sep="")))
 ```
 
-```{r binding_distribution_vioplot_S2V29_UCA, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S2V29_UCA),],aes(x=target,y=EC50_S2V29_UCA))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2V29_UCA EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -823,12 +1151,18 @@ p1 <- ggplot(dt[!is.na(EC50_S2V29_UCA),],aes(x=target,y=EC50_S2V29_UCA))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+    ## Warning: Groups with fewer than two data points have been dropped.
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2V29_UCA-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2V29_UCA.pdf",sep="")))
 ```
 
-```{r binding_distribution_vioplot_S309_887, echo=T, fig.width=15, fig.height=5, fig.align="center", dpi=300,dev="png"}
+``` r
 p1 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=EC50_S309_887))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S309_887 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
@@ -836,15 +1170,22 @@ p1 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=EC50_S309_887))+
   scale_y_log10()
 
 grid.arrange(p1,ncol=1)
+```
 
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S309_887-1.png" style="display: block; margin: auto;" />
+
+``` r
 #save pdf
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S309_887.pdf",sep="")))
 ```
+
 ## Save barcode-level metrics
 
-In the next script, we will collapse bcs down to final mutant/variant-level phenotypes, integrate things like expression effects of variants, and visualize final phenotypes.
+In the next script, we will collapse bcs down to final
+mutant/variant-level phenotypes, integrate things like expression
+effects of variants, and visualize final phenotypes.
 
-```{r output_data_barcode-level}
+``` r
 dt[,.(library,barcode,target,variant_class,
      `S2V29_v37_2_avgcount`,EC50_S2V29_v37_2,
      `S2V29_avgcount`,EC50_S2V29,
@@ -857,8 +1198,4 @@ dt[,.(library,barcode,target,variant_class,
      `S309_887_avgcount`,EC50_S309_887)] %>%
   mutate_if(is.numeric, round, digits=6) %>%
   write.csv(file=config$mAb_EC50_file, row.names=F)
-
 ```
-
-
-
