@@ -287,10 +287,10 @@ lib61_SARSr-wts,Omi42_06_bin1,Omi42,1,6,230920,1003715,/uufs/chpc.utah.edu/commo
 lib61_SARSr-wts,Omi42_06_bin2,Omi42,2,6,230920,49267,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s21-b2_R1_001.fastq.gz
 lib61_SARSr-wts,Omi42_06_bin3,Omi42,3,6,230920,17,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s21-b3_R1_001.fastq.gz
 lib61_SARSr-wts,Omi42_06_bin4,Omi42,4,6,230920,3,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s21-b4_R1_001.fastq.gz
-lib61_SARSr-wts,S309_01_bin1,S309,1,1,230920,400219,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b1_R1_001.fastq.gz
-lib61_SARSr-wts,S309_01_bin2,S309,2,1,230920,63892,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b2_R1_001.fastq.gz
-lib61_SARSr-wts,S309_01_bin3,S309,3,1,230920,126223,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b3_R1_001.fastq.gz
-lib61_SARSr-wts,S309_01_bin4,S309,4,1,230920,605604,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b4_R1_001.fastq.gz
+lib61_SARSr-wts,S309_01_bin1,S309,1,1,230920,400219,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b4_R1_001.fastq.gz
+lib61_SARSr-wts,S309_01_bin2,S309,2,1,230920,63892,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b3_R1_001.fastq.gz
+lib61_SARSr-wts,S309_01_bin3,S309,3,1,230920,126223,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b2_R1_001.fastq.gz
+lib61_SARSr-wts,S309_01_bin4,S309,4,1,230920,605604,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b1_R1_001.fastq.gz
 lib61_SARSr-wts,S309_02_bin1,S309,1,2,230920,409463,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s17-b1_R1_001.fastq.gz
 lib61_SARSr-wts,S309_02_bin2,S309,2,2,230920,92049,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s17-b2_R1_001.fastq.gz
 lib61_SARSr-wts,S309_02_bin3,S309,3,2,230920,189664,/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s17-b3_R1_001.fastq.gz

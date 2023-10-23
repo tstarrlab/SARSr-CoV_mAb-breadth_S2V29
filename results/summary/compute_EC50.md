@@ -430,10 +430,10 @@ for(i in 1:nrow(barcode_runs)){
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin2 is 10.0764609170439"
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin3 is 23.4117647058824"
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin4 is 30"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin1 is 17.7887106809022"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin2 is 25.119326363238"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin3 is 4.93891762990897"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin4 is 6.49437256028692"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin1 is 9.82716462736652"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin2 is 9.75716834658486"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin3 is 12.7149885520072"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin4 is 11.755833845219"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin1 is 12.1037969242642"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin2 is 11.8167171832394"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin3 is 13.7895752488611"
@@ -932,7 +932,7 @@ measurements, 0.7028266 of the S3L17 mAb, 0.7582442 of S2V29, 0.723453
 of S2K146_v860, 0.7581169 of S2V29_v37_2, 0.7029857 of S2K146_UCA,
 0.6860517 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.7046409 of S309_887,
 0.7000573 of our S2X259 mAb measurements, 0.6790171 of our SA55 mAb
-measurements, 0.6383053 of our Omi42 mAb measurements, 0.6832506 of our
+measurements, 0.6383053 of our Omi42 mAb measurements, 0.6907308 of our
 S309 mAb measurements.
 
 ``` r
@@ -1516,17 +1516,6 @@ p1 <- ggplot(dt[!is.na(EC50_S309),],aes(x=target,y=EC50_S309))+
 
 grid.arrange(p1,ncol=1)
 ```
-
-    ## Warning: Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
 
 <img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S309-1.png" style="display: block; margin: auto;" />
 

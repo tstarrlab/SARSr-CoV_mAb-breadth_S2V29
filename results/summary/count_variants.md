@@ -3132,7 +3132,7 @@ display(HTML(barcode_runs.to_html(index=False)))
       <td>1</td>
       <td>230920</td>
       <td>400219</td>
-      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b1_R1_001.fastq.gz]</td>
+      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b4_R1_001.fastq.gz]</td>
     </tr>
     <tr>
       <td>lib61_SARSr-wts</td>
@@ -3142,7 +3142,7 @@ display(HTML(barcode_runs.to_html(index=False)))
       <td>1</td>
       <td>230920</td>
       <td>63892</td>
-      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b2_R1_001.fastq.gz]</td>
+      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b3_R1_001.fastq.gz]</td>
     </tr>
     <tr>
       <td>lib61_SARSr-wts</td>
@@ -3152,7 +3152,7 @@ display(HTML(barcode_runs.to_html(index=False)))
       <td>1</td>
       <td>230920</td>
       <td>126223</td>
-      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b3_R1_001.fastq.gz]</td>
+      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b2_R1_001.fastq.gz]</td>
     </tr>
     <tr>
       <td>lib61_SARSr-wts</td>
@@ -3162,7 +3162,7 @@ display(HTML(barcode_runs.to_html(index=False)))
       <td>1</td>
       <td>230920</td>
       <td>605604</td>
-      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b4_R1_001.fastq.gz]</td>
+      <td>[/uufs/chpc.utah.edu/common/home/u6042467/starr-group1/sequencing/TNS/2023/231018_bc_Vir-breadth-part2/20230920-s16-b1_R1_001.fastq.gz]</td>
     </tr>
     <tr>
       <td>lib61_SARSr-wts</td>
@@ -5231,21 +5231,13 @@ display(HTML(fates
     <tr>
       <th>S309_01_bin1</th>
       <td>0</td>
-      <td>1481328</td>
-      <td>779177</td>
-      <td>332043</td>
-      <td>7119380</td>
+      <td>1047662</td>
+      <td>452090</td>
+      <td>282709</td>
+      <td>3933018</td>
     </tr>
     <tr>
       <th>S309_01_bin2</th>
-      <td>0</td>
-      <td>181527</td>
-      <td>162778</td>
-      <td>63670</td>
-      <td>1604924</td>
-    </tr>
-    <tr>
-      <th>S309_01_bin3</th>
       <td>0</td>
       <td>163575</td>
       <td>73311</td>
@@ -5253,12 +5245,20 @@ display(HTML(fates
       <td>623405</td>
     </tr>
     <tr>
+      <th>S309_01_bin3</th>
+      <td>0</td>
+      <td>181527</td>
+      <td>162778</td>
+      <td>63670</td>
+      <td>1604924</td>
+    </tr>
+    <tr>
       <th>S309_01_bin4</th>
       <td>0</td>
-      <td>1047662</td>
-      <td>452090</td>
-      <td>282709</td>
-      <td>3933018</td>
+      <td>1481328</td>
+      <td>779177</td>
+      <td>332043</td>
+      <td>7119380</td>
     </tr>
     <tr>
       <th>S309_02_bin1</th>
