@@ -249,8 +249,6 @@ grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,ncol=1)
 
     ## Warning: Groups with fewer than two data points have been dropped.
     ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
-    ## Groups with fewer than two data points have been dropped.
 
 <img src="collapse_barcodes_lib61_SARSr-wts_files/figure-gfm/censor_5_AUCs-1.png" style="display: block; margin: auto;" />
 

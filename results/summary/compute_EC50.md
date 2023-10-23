@@ -97,20 +97,11 @@ dt <- merge(counts, dt, by=c("library","barcode")); rm(counts)
 
 samples_S2K146 <- data.frame(sample=sort(unique(paste(rep("S2K146",6),formatC(barcode_runs[barcode_runs$sample_type=="S2K146","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 
-#temporarily run S2K146 without sample 2 (second highest concentraiton point) due to undersequenced bin, undo this when topped off
-samples_S2K146 <- samples_S2K146[-2,]
-
 samples_S3L17 <- data.frame(sample=sort(unique(paste(rep("S3L17",6),formatC(barcode_runs[barcode_runs$sample_type=="S3L17","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
-
-#temporarily run S3L17 without sample 3 (middle concentraiton point) due to undersequenced bin, undo this when topped off
-samples_S3L17 <- samples_S3L17[-3,]
 
 samples_S2V29 <- data.frame(sample=sort(unique(paste(rep("S2V29",6),formatC(barcode_runs[barcode_runs$sample_type=="S2V29","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 
 samples_S2K146_v860 <- data.frame(sample=sort(unique(paste(rep("S2K146_v860",6),formatC(barcode_runs[barcode_runs$sample_type=="S2K146_v860","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
-
-#temporarily run S2K146_v860 without sample 4 (second lowest concentraiton point) due to undersequenced bin, undo this when topped off
-samples_S2K146_v860 <- samples_S2K146_v860[-4,]
 
 samples_S2V29_v37_2 <- data.frame(sample=sort(unique(paste(rep("S2V29_v37_2",6),formatC(barcode_runs[barcode_runs$sample_type=="S2V29_v37_2","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 
@@ -121,6 +112,14 @@ samples_S3L17_UCA <- data.frame(sample=sort(unique(paste(rep("S3L17_UCA",6),form
 samples_S2V29_UCA <- data.frame(sample=sort(unique(paste(rep("S2V29_UCA",6),formatC(barcode_runs[barcode_runs$sample_type=="S2V29_UCA","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 
 samples_S309_887 <- data.frame(sample=sort(unique(paste(rep("S309_887",6),formatC(barcode_runs[barcode_runs$sample_type=="S309_887","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
+
+samples_S2X259 <- data.frame(sample=sort(unique(paste(rep("S2X259",6),formatC(barcode_runs[barcode_runs$sample_type=="S2X259","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
+
+samples_SA55 <- data.frame(sample=sort(unique(paste(rep("SA55",6),formatC(barcode_runs[barcode_runs$sample_type=="SA55","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
+
+samples_Omi42 <- data.frame(sample=sort(unique(paste(rep("Omi42",6),formatC(barcode_runs[barcode_runs$sample_type=="Omi42","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
+
+samples_S309 <- data.frame(sample=sort(unique(paste(rep("S309",6),formatC(barcode_runs[barcode_runs$sample_type=="S309","concentration"], width=2,flag="0"),sep="_"))),conc=c(10000, 400, 16, 0.64, 0.0256, 0))
 ```
 
 Convert from Illumina read counts to estimates of the number of cells
@@ -594,6 +593,50 @@ for(i in 1:nrow(samples_S309_887)){ #iterate through titeseq sample (concentrati
   bin4_in <- paste(samples_S309_887[i,"sample"],"_bin4",sep="")
   dt[,c(meanbin_out,totalcount_out) := calc.meanbin(c(get(bin1_in),get(bin2_in),get(bin3_in),get(bin4_in))),by=c("barcode","library")]
 }
+
+#S2X259
+for(i in 1:nrow(samples_S2X259)){ #iterate through titeseq sample (concentration)
+  meanbin_out <- paste(samples_S2X259[i,"sample"],"_meanbin",sep="") #define the header name for the meanbin output for the given concentration sample
+  totalcount_out <- paste(samples_S2X259[i,"sample"],"_totalcount",sep="") #define the header name for the total cell count output for the given concentration sample
+  bin1_in <- paste(samples_S2X259[i,"sample"],"_bin1",sep="") #define the header names for the input cell counts for bins1-4 of the given concnetration sample
+  bin2_in <- paste(samples_S2X259[i,"sample"],"_bin2",sep="")
+  bin3_in <- paste(samples_S2X259[i,"sample"],"_bin3",sep="")
+  bin4_in <- paste(samples_S2X259[i,"sample"],"_bin4",sep="")
+  dt[,c(meanbin_out,totalcount_out) := calc.meanbin(c(get(bin1_in),get(bin2_in),get(bin3_in),get(bin4_in))),by=c("barcode","library")]
+}
+
+#SA55
+for(i in 1:nrow(samples_SA55)){ #iterate through titeseq sample (concentration)
+  meanbin_out <- paste(samples_SA55[i,"sample"],"_meanbin",sep="") #define the header name for the meanbin output for the given concentration sample
+  totalcount_out <- paste(samples_SA55[i,"sample"],"_totalcount",sep="") #define the header name for the total cell count output for the given concentration sample
+  bin1_in <- paste(samples_SA55[i,"sample"],"_bin1",sep="") #define the header names for the input cell counts for bins1-4 of the given concnetration sample
+  bin2_in <- paste(samples_SA55[i,"sample"],"_bin2",sep="")
+  bin3_in <- paste(samples_SA55[i,"sample"],"_bin3",sep="")
+  bin4_in <- paste(samples_SA55[i,"sample"],"_bin4",sep="")
+  dt[,c(meanbin_out,totalcount_out) := calc.meanbin(c(get(bin1_in),get(bin2_in),get(bin3_in),get(bin4_in))),by=c("barcode","library")]
+}
+
+#Omi42
+for(i in 1:nrow(samples_Omi42)){ #iterate through titeseq sample (concentration)
+  meanbin_out <- paste(samples_Omi42[i,"sample"],"_meanbin",sep="") #define the header name for the meanbin output for the given concentration sample
+  totalcount_out <- paste(samples_Omi42[i,"sample"],"_totalcount",sep="") #define the header name for the total cell count output for the given concentration sample
+  bin1_in <- paste(samples_Omi42[i,"sample"],"_bin1",sep="") #define the header names for the input cell counts for bins1-4 of the given concnetration sample
+  bin2_in <- paste(samples_Omi42[i,"sample"],"_bin2",sep="")
+  bin3_in <- paste(samples_Omi42[i,"sample"],"_bin3",sep="")
+  bin4_in <- paste(samples_Omi42[i,"sample"],"_bin4",sep="")
+  dt[,c(meanbin_out,totalcount_out) := calc.meanbin(c(get(bin1_in),get(bin2_in),get(bin3_in),get(bin4_in))),by=c("barcode","library")]
+}
+
+#S309
+for(i in 1:nrow(samples_S309)){ #iterate through titeseq sample (concentration)
+  meanbin_out <- paste(samples_S309[i,"sample"],"_meanbin",sep="") #define the header name for the meanbin output for the given concentration sample
+  totalcount_out <- paste(samples_S309[i,"sample"],"_totalcount",sep="") #define the header name for the total cell count output for the given concentration sample
+  bin1_in <- paste(samples_S309[i,"sample"],"_bin1",sep="") #define the header names for the input cell counts for bins1-4 of the given concnetration sample
+  bin2_in <- paste(samples_S309[i,"sample"],"_bin2",sep="")
+  bin3_in <- paste(samples_S309[i,"sample"],"_bin3",sep="")
+  bin4_in <- paste(samples_S309[i,"sample"],"_bin4",sep="")
+  dt[,c(meanbin_out,totalcount_out) := calc.meanbin(c(get(bin1_in),get(bin2_in),get(bin3_in),get(bin4_in))),by=c("barcode","library")]
+}
 ```
 
 ## Fit binding curves
@@ -608,43 +651,25 @@ titration to be reported.
 #For QC and filtering, output columns giving the average number of cells that were sampled for a barcode across the 6 sample concentrations, and a value for the number of meanbin estimates that were removed for being below the # of cells cutoff
 cutoff <- 2
 
-# #undo this comment out and remove re-do below  when backfilling reads
-# dt[,S2K146_avgcount := mean(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
-#                              S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount),na.rm=T),by=c("library","barcode")]
-# 
-# #number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
-# dt[,S2K146_min_cell_filtered := sum(c(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
-#                                        S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount)<cutoff,
-#                                      is.na(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
-#                                              S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount))),na.rm=T),by=c("library","barcode")]
-
-#remove this when filling s02 back in
-dt[,S2K146_avgcount := mean(c(S2K146_01_totalcount,S2K146_03_totalcount,
+dt[,S2K146_avgcount := mean(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
                              S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount),na.rm=T),by=c("library","barcode")]
-dt[,S2K146_min_cell_filtered := sum(c(c(S2K146_01_totalcount,S2K146_03_totalcount,
+
+#number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
+dt[,S2K146_min_cell_filtered := sum(c(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
                                        S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount)<cutoff,
-                                     is.na(c(S2K146_01_totalcount,S2K146_03_totalcount,
+                                     is.na(c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
                                              S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
-# #undo this comment out and remove re-do below  when backfilling reads
-# dt[,S3L17_avgcount := mean(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
-#                              S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount),na.rm=T),by=c("library","barcode")]
-# 
-# #number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
-# dt[,S3L17_min_cell_filtered := sum(c(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
-#                                        S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount)<cutoff,
-#                                      is.na(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
-#                                              S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
-#remove this when filling s-3 back in
-dt[,S3L17_avgcount := mean(c(S3L17_01_totalcount,S3L17_02_totalcount,
+dt[,S3L17_avgcount := mean(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
                              S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount),na.rm=T),by=c("library","barcode")]
 
 #number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
-dt[,S3L17_min_cell_filtered := sum(c(c(S3L17_01_totalcount,S3L17_02_totalcount,
+dt[,S3L17_min_cell_filtered := sum(c(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
                                        S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount)<cutoff,
-                                     is.na(c(S3L17_01_totalcount,S3L17_02_totalcount,
+                                     is.na(c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
                                              S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount))),na.rm=T),by=c("library","barcode")]
+
 
 dt[,S2V29_avgcount := mean(c(S2V29_01_totalcount,S2V29_02_totalcount,S2V29_03_totalcount,
                              S2V29_04_totalcount,S2V29_05_totalcount,S2V29_06_totalcount),na.rm=T),by=c("library","barcode")]
@@ -655,25 +680,14 @@ dt[,S2V29_min_cell_filtered := sum(c(c(S2V29_01_totalcount,S2V29_02_totalcount,S
                                      is.na(c(S2V29_01_totalcount,S2V29_02_totalcount,S2V29_03_totalcount,
                                              S2V29_04_totalcount,S2V29_05_totalcount,S2V29_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
-# #undo this comment out and remove below when backfilling reads
-# dt[,S2K146_v860_avgcount := mean(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-#                              S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount),na.rm=T),by=c("library","barcode")]
-# 
-# #number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
-# dt[,S2K146_v860_min_cell_filtered := sum(c(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-#                                        S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount)<cutoff,
-#                                      is.na(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-#                                              S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount))),na.rm=T),by=c("library","barcode")]
-#remove this when replacing s04 reads
 dt[,S2K146_v860_avgcount := mean(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-                             S2K146_v860_05_totalcount,S2K146_v860_06_totalcount),na.rm=T),by=c("library","barcode")]
+                             S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount),na.rm=T),by=c("library","barcode")]
 
 #number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
 dt[,S2K146_v860_min_cell_filtered := sum(c(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-                                       S2K146_v860_05_totalcount,S2K146_v860_06_totalcount)<cutoff,
+                                       S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount)<cutoff,
                                      is.na(c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-                                             S2K146_v860_05_totalcount,S2K146_v860_06_totalcount))),na.rm=T),by=c("library","barcode")]
-
+                                             S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
 dt[,S2V29_v37_2_avgcount := mean(c(S2V29_v37_2_01_totalcount,S2V29_v37_2_02_totalcount,S2V29_v37_2_03_totalcount,
                              S2V29_v37_2_04_totalcount,S2V29_v37_2_05_totalcount,S2V29_v37_2_06_totalcount),na.rm=T),by=c("library","barcode")]
@@ -720,6 +734,41 @@ dt[,S309_887_min_cell_filtered := sum(c(c(S309_887_01_totalcount,S309_887_02_tot
                                      is.na(c(S309_887_01_totalcount,S309_887_02_totalcount,S309_887_03_totalcount,
                                              S309_887_04_totalcount,S309_887_05_totalcount,S309_887_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
+dt[,S2X259_avgcount := mean(c(S2X259_01_totalcount,S2X259_02_totalcount,S2X259_03_totalcount,
+                             S2X259_04_totalcount,S2X259_05_totalcount,S2X259_06_totalcount),na.rm=T),by=c("library","barcode")]
+
+#number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
+dt[,S2X259_min_cell_filtered := sum(c(c(S2X259_01_totalcount,S2X259_02_totalcount,S2X259_03_totalcount,
+                                       S2X259_04_totalcount,S2X259_05_totalcount,S2X259_06_totalcount)<cutoff,
+                                     is.na(c(S2X259_01_totalcount,S2X259_02_totalcount,S2X259_03_totalcount,
+                                             S2X259_04_totalcount,S2X259_05_totalcount,S2X259_06_totalcount))),na.rm=T),by=c("library","barcode")]
+
+dt[,SA55_avgcount := mean(c(SA55_01_totalcount,SA55_02_totalcount,SA55_03_totalcount,
+                             SA55_04_totalcount,SA55_05_totalcount,SA55_06_totalcount),na.rm=T),by=c("library","barcode")]
+
+#number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
+dt[,SA55_min_cell_filtered := sum(c(c(SA55_01_totalcount,SA55_02_totalcount,SA55_03_totalcount,
+                                       SA55_04_totalcount,SA55_05_totalcount,SA55_06_totalcount)<cutoff,
+                                     is.na(c(SA55_01_totalcount,SA55_02_totalcount,SA55_03_totalcount,
+                                             SA55_04_totalcount,SA55_05_totalcount,SA55_06_totalcount))),na.rm=T),by=c("library","barcode")]
+
+dt[,Omi42_avgcount := mean(c(Omi42_01_totalcount,Omi42_02_totalcount,Omi42_03_totalcount,
+                             Omi42_04_totalcount,Omi42_05_totalcount,Omi42_06_totalcount),na.rm=T),by=c("library","barcode")]
+
+#number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
+dt[,Omi42_min_cell_filtered := sum(c(c(Omi42_01_totalcount,Omi42_02_totalcount,Omi42_03_totalcount,
+                                       Omi42_04_totalcount,Omi42_05_totalcount,Omi42_06_totalcount)<cutoff,
+                                     is.na(c(Omi42_01_totalcount,Omi42_02_totalcount,Omi42_03_totalcount,
+                                             Omi42_04_totalcount,Omi42_05_totalcount,Omi42_06_totalcount))),na.rm=T),by=c("library","barcode")]
+
+dt[,S309_avgcount := mean(c(S309_01_totalcount,S309_02_totalcount,S309_03_totalcount,
+                             S309_04_totalcount,S309_05_totalcount,S309_06_totalcount),na.rm=T),by=c("library","barcode")]
+
+#number of concentrations at which meanbin is calculated from < cutoff cells or is missing b/c filtered for bimodality
+dt[,S309_min_cell_filtered := sum(c(c(S309_01_totalcount,S309_02_totalcount,S309_03_totalcount,
+                                       S309_04_totalcount,S309_05_totalcount,S309_06_totalcount)<cutoff,
+                                     is.na(c(S309_01_totalcount,S309_02_totalcount,S309_03_totalcount,
+                                             S309_04_totalcount,S309_05_totalcount,S309_06_totalcount))),na.rm=T),by=c("library","barcode")]
 
 #function that fits a nls regression to the titration series, including an option to filter below certain thresholds for average cells across all samples, and number of samples below a cutoff of cells
 fit.titration <- function(y.vals,x.vals,count.vals,min.cfu=cutoff,
@@ -750,22 +799,22 @@ fit.titration <- function(y.vals,x.vals,count.vals,min.cfu=cutoff,
   }
 }
 
-#fit titration to S2K146 data for each barcode, CURRENTLY WITHOUT S02!!
+#fit titration to S2K146 data for each barcode
 dt[,c("EC50_S2K146","EC50_SE_S2K146","response_S2K146","baseline_S2K146","nMSR_S2K146") :=
-     tryCatch(fit.titration(y.vals=c(S2K146_01_meanbin,S2K146_03_meanbin,
+     tryCatch(fit.titration(y.vals=c(S2K146_01_meanbin,S2K146_02_meanbin,S2K146_03_meanbin,
                                      S2K146_04_meanbin,S2K146_05_meanbin,S2K146_06_meanbin),
                             x.vals=samples_S2K146$conc,
-                            count.vals=c(S2K146_01_totalcount,S2K146_03_totalcount,
+                            count.vals=c(S2K146_01_totalcount,S2K146_02_totalcount,S2K146_03_totalcount,
                                          S2K146_04_totalcount,S2K146_05_totalcount,S2K146_06_totalcount)),
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
 
 
-#fit titration to S3L17 data for each barcode, CURRENTLY WITHOUT S03!
+#fit titration to S3L17 data for each barcode
 dt[,c("EC50_S3L17","EC50_SE_S3L17","response_S3L17","baseline_S3L17","nMSR_S3L17") :=
-     tryCatch(fit.titration(y.vals=c(S3L17_01_meanbin,S3L17_02_meanbin,
+     tryCatch(fit.titration(y.vals=c(S3L17_01_meanbin,S3L17_02_meanbin,S3L17_03_meanbin,
                                      S3L17_04_meanbin,S3L17_05_meanbin,S3L17_06_meanbin),
                             x.vals=samples_S3L17$conc,
-                            count.vals=c(S3L17_01_totalcount,S3L17_02_totalcount,
+                            count.vals=c(S3L17_01_totalcount,S3L17_02_totalcount,S3L17_03_totalcount,
                                          S3L17_04_totalcount,S3L17_05_totalcount,S3L17_06_totalcount)),
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
 
@@ -780,13 +829,13 @@ dt[,c("EC50_S2V29","EC50_SE_S2V29","response_S2V29","baseline_S2V29","nMSR_S2V29
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
 
 
-#fit titration to S2K146_v860 data for each barcode, CURRENTLY WITHOUT S04!!
+#fit titration to S2K146_v860 data for each barcode
 dt[,c("EC50_S2K146_v860","EC50_SE_S2K146_v860","response_S2K146_v860","baseline_S2K146_v860","nMSR_S2K146_v860") :=
      tryCatch(fit.titration(y.vals=c(S2K146_v860_01_meanbin,S2K146_v860_02_meanbin,S2K146_v860_03_meanbin,
-                                     S2K146_v860_05_meanbin,S2K146_v860_06_meanbin),
+                                     S2K146_v860_04_meanbin,S2K146_v860_05_meanbin,S2K146_v860_06_meanbin),
                             x.vals=samples_S2K146_v860$conc,
                             count.vals=c(S2K146_v860_01_totalcount,S2K146_v860_02_totalcount,S2K146_v860_03_totalcount,
-                                         S2K146_v860_05_totalcount,S2K146_v860_06_totalcount)),
+                                         S2K146_v860_04_totalcount,S2K146_v860_05_totalcount,S2K146_v860_06_totalcount)),
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
 
 #fit titration to S2V29_v37_2 data for each barcode
@@ -833,6 +882,42 @@ dt[,c("EC50_S309_887","EC50_SE_S309_887","response_S309_887","baseline_S309_887"
                             count.vals=c(S309_887_01_totalcount,S309_887_02_totalcount,S309_887_03_totalcount,
                                          S309_887_04_totalcount,S309_887_05_totalcount,S309_887_06_totalcount)),
               error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
+
+#fit titration to S2X259 data for each barcode
+dt[,c("EC50_S2X259","EC50_SE_S2X259","response_S2X259","baseline_S2X259","nMSR_S2X259") :=
+     tryCatch(fit.titration(y.vals=c(S2X259_01_meanbin,S2X259_02_meanbin,S2X259_03_meanbin,
+                                     S2X259_04_meanbin,S2X259_05_meanbin,S2X259_06_meanbin),
+                            x.vals=samples_S2X259$conc,
+                            count.vals=c(S2X259_01_totalcount,S2X259_02_totalcount,S2X259_03_totalcount,
+                                         S2X259_04_totalcount,S2X259_05_totalcount,S2X259_06_totalcount)),
+              error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
+
+#fit titration to SA55 data for each barcode
+dt[,c("EC50_SA55","EC50_SE_SA55","response_SA55","baseline_SA55","nMSR_SA55") :=
+     tryCatch(fit.titration(y.vals=c(SA55_01_meanbin,SA55_02_meanbin,SA55_03_meanbin,
+                                     SA55_04_meanbin,SA55_05_meanbin,SA55_06_meanbin),
+                            x.vals=samples_SA55$conc,
+                            count.vals=c(SA55_01_totalcount,SA55_02_totalcount,SA55_03_totalcount,
+                                         SA55_04_totalcount,SA55_05_totalcount,SA55_06_totalcount)),
+              error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
+
+#fit titration to Omi42 data for each barcode
+dt[,c("EC50_Omi42","EC50_SE_Omi42","response_Omi42","baseline_Omi42","nMSR_Omi42") :=
+     tryCatch(fit.titration(y.vals=c(Omi42_01_meanbin,Omi42_02_meanbin,Omi42_03_meanbin,
+                                     Omi42_04_meanbin,Omi42_05_meanbin,Omi42_06_meanbin),
+                            x.vals=samples_Omi42$conc,
+                            count.vals=c(Omi42_01_totalcount,Omi42_02_totalcount,Omi42_03_totalcount,
+                                         Omi42_04_totalcount,Omi42_05_totalcount,Omi42_06_totalcount)),
+              error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
+
+#fit titration to S309 data for each barcode
+dt[,c("EC50_S309","EC50_SE_S309","response_S309","baseline_S309","nMSR_S309") :=
+     tryCatch(fit.titration(y.vals=c(S309_01_meanbin,S309_02_meanbin,S309_03_meanbin,
+                                     S309_04_meanbin,S309_05_meanbin,S309_06_meanbin),
+                            x.vals=samples_S309$conc,
+                            count.vals=c(S309_01_totalcount,S309_02_totalcount,S309_03_totalcount,
+                                         S309_04_totalcount,S309_05_totalcount,S309_06_totalcount)),
+              error=function(e){list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))}),by=c("library","barcode")]
 ```
 
 ## QC and sanity checks
@@ -842,10 +927,13 @@ our library barcodes. We will also spot check titration curves from
 across our measurement range, and spot check curves whose fit parameters
 hit the different boundary conditions of the fit variables.
 
-We successfully generated EC50 estimates for 0.6242042 of our S2K146 mAb
-measurements, 0.7271454 of the S3L17 mAb, 0.7582442 of S2V29, 0.7335752
+We successfully generated EC50 estimates for 0.6998345 of our S2K146 mAb
+measurements, 0.7028266 of the S3L17 mAb, 0.7582442 of S2V29, 0.723453
 of S2K146_v860, 0.7581169 of S2V29_v37_2, 0.7029857 of S2K146_UCA,
-0.6860517 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.7046409 of S309_887.
+0.6860517 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.7046409 of S309_887,
+0.7000573 of our S2X259 mAb measurements, 0.6790171 of our SA55 mAb
+measurements, 0.6383053 of our Omi42 mAb measurements, 0.6832506 of our
+S309 mAb measurements.
 
 ``` r
 #make functions that allow me to plot a titration for any given row from the counts data frames, for spot checking curves
@@ -1011,6 +1099,66 @@ plot.titration(which(dt$EC50_S309_887<0.5)[3],"S309_887")
 
 <img src="compute_EC50_files/figure-gfm/EC50_S309_887-1.png" style="display: block; margin: auto;" />
 
+``` r
+par(mfrow=c(3,3))
+plot.titration(which(dt$EC50_S2X259>=10000)[1],"S2X259")
+plot.titration(which(dt$EC50_S2X259>=10000)[2],"S2X259")
+plot.titration(which(dt$EC50_S2X259>=10000)[3],"S2X259")
+plot.titration(which(dt$EC50_S2X259>1 & dt$EC50_S2X259<10)[1],"S2X259")
+plot.titration(which(dt$EC50_S2X259>1 & dt$EC50_S2X259<10)[2],"S2X259")
+plot.titration(which(dt$EC50_S2X259>1 & dt$EC50_S2X259<10)[3],"S2X259")
+plot.titration(which(dt$EC50_S2X259<0.5)[1],"S2X259")
+plot.titration(which(dt$EC50_S2X259<0.5)[2],"S2X259")
+plot.titration(which(dt$EC50_S2X259<0.5)[3],"S2X259")
+```
+
+<img src="compute_EC50_files/figure-gfm/EC50_S2X259-1.png" style="display: block; margin: auto;" />
+
+``` r
+par(mfrow=c(3,3))
+plot.titration(which(dt$EC50_SA55>=10000)[1],"SA55")
+plot.titration(which(dt$EC50_SA55>=10000)[2],"SA55")
+plot.titration(which(dt$EC50_SA55>=10000)[3],"SA55")
+plot.titration(which(dt$EC50_SA55>1 & dt$EC50_SA55<10)[1],"SA55")
+plot.titration(which(dt$EC50_SA55>1 & dt$EC50_SA55<10)[2],"SA55")
+plot.titration(which(dt$EC50_SA55>1 & dt$EC50_SA55<10)[3],"SA55")
+plot.titration(which(dt$EC50_SA55<0.5)[1],"SA55")
+plot.titration(which(dt$EC50_SA55<0.5)[2],"SA55")
+plot.titration(which(dt$EC50_SA55<0.5)[3],"SA55")
+```
+
+<img src="compute_EC50_files/figure-gfm/EC50_SA55-1.png" style="display: block; margin: auto;" />
+
+``` r
+par(mfrow=c(3,3))
+plot.titration(which(dt$EC50_Omi42>=10000)[1],"Omi42")
+plot.titration(which(dt$EC50_Omi42>=10000)[2],"Omi42")
+plot.titration(which(dt$EC50_Omi42>=10000)[3],"Omi42")
+plot.titration(which(dt$EC50_Omi42>1 & dt$EC50_Omi42<10)[1],"Omi42")
+plot.titration(which(dt$EC50_Omi42>1 & dt$EC50_Omi42<10)[2],"Omi42")
+plot.titration(which(dt$EC50_Omi42>1 & dt$EC50_Omi42<10)[3],"Omi42")
+plot.titration(which(dt$EC50_Omi42<0.5)[1],"Omi42")
+plot.titration(which(dt$EC50_Omi42<0.5)[2],"Omi42")
+plot.titration(which(dt$EC50_Omi42<0.5)[3],"Omi42")
+```
+
+<img src="compute_EC50_files/figure-gfm/EC50_Omi42-1.png" style="display: block; margin: auto;" />
+
+``` r
+par(mfrow=c(3,3))
+plot.titration(which(dt$EC50_S309>=10000)[1],"S309")
+plot.titration(which(dt$EC50_S309>=10000)[2],"S309")
+plot.titration(which(dt$EC50_S309>=10000)[3],"S309")
+plot.titration(which(dt$EC50_S309>1 & dt$EC50_S309<10)[1],"S309")
+plot.titration(which(dt$EC50_S309>1 & dt$EC50_S309<10)[2],"S309")
+plot.titration(which(dt$EC50_S309>1 & dt$EC50_S309<10)[3],"S309")
+plot.titration(which(dt$EC50_S309<0.5)[1],"S309")
+plot.titration(which(dt$EC50_S309<0.5)[2],"S309")
+plot.titration(which(dt$EC50_S309<0.5)[3],"S309")
+```
+
+<img src="compute_EC50_files/figure-gfm/EC50_S309-1.png" style="display: block; margin: auto;" />
+
 ## Data filtering by fit quality
 
 Next, let’s filter out poor fits using the value we previously computed,
@@ -1038,15 +1186,26 @@ hist(dt$nMSR_S309_887,main="S309_887",xlab="Response-normalized mean squared res
 
 <img src="compute_EC50_files/figure-gfm/nMSR_distribution-1.png" style="display: block; margin: auto;" />
 
+``` r
+hist(dt$nMSR_S2X259,main="S2X259",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
+hist(dt$nMSR_SA55,main="SA55",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
+hist(dt$nMSR_Omi42,main="Omi42",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
+hist(dt$nMSR_S309,main="S309",xlab="Response-normalized mean squared residual",col="gray50",breaks=40,xlim=c(0,0.6))
+```
+
+<img src="compute_EC50_files/figure-gfm/nMSR_distribution-2.png" style="display: block; margin: auto;" />
+
 As we would expect, the MSR stat decreases with cell count, indicating
 that higher cell counts leads to better curve fits. Also show the cutoff
 I’m proposing for nMSR (20x median across all fits), legend gives
 percent of curve fits eliminated
 
 ``` r
-median.nMSR <- median(c(dt$nMSR_S2K146,dt$nMSR_S3L17,dt$nMSR_S2V29,dt$nMSR_S2K146_v860, dt$nMSR_S2V29_v37_2, dt$nMSR_S2K146_UCA, dt$nMSR_S3L17_UCA, dt$nMSR_S2V29_UCA, dt$nMSR_S309_887),na.rm=T)
+median.nMSR <- median(c(dt$nMSR_S2K146,dt$nMSR_S3L17,dt$nMSR_S2V29,dt$nMSR_S2K146_v860, dt$nMSR_S2V29_v37_2, 
+                        dt$nMSR_S2K146_UCA, dt$nMSR_S3L17_UCA, dt$nMSR_S2V29_UCA, dt$nMSR_S309_887,
+                        dt$nMSR_S2X259, dt$nMSR_SA55, dt$nMSR_Omi42, dt$nMSR_S309),na.rm=T)
 
-par(mfrow=c(3,3))
+par(mfrow=c(4,4))
 plot(log10(dt$`S2K146_avgcount`),dt$nMSR_S2K146,main="S2K146",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
 abline(h=20*median.nMSR,col="red",lty=2)
 legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S2K146 > 10*median.nMSR & !is.na(nMSR_S2K146),])/nrow(dt[!is.na(nMSR_S2K146),]),digits=3),"%"))
@@ -1082,6 +1241,22 @@ legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S2V29_UCA > 
 plot(log10(dt$`S309_887_avgcount`),dt$nMSR_S309_887,main="S309_887",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
 abline(h=20*median.nMSR,col="red",lty=2)
 legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S309_887 > 10*median.nMSR & !is.na(nMSR_S309_887),])/nrow(dt[!is.na(nMSR_S309_887),]),digits=3),"%"))
+
+plot(log10(dt$`S2X259_avgcount`),dt$nMSR_S2X259,main="S2X259",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
+abline(h=20*median.nMSR,col="red",lty=2)
+legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S2X259 > 10*median.nMSR & !is.na(nMSR_S2X259),])/nrow(dt[!is.na(nMSR_S2X259),]),digits=3),"%"))
+
+plot(log10(dt$`SA55_avgcount`),dt$nMSR_SA55,main="SA55",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
+abline(h=20*median.nMSR,col="red",lty=2)
+legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_SA55 > 10*median.nMSR & !is.na(nMSR_SA55),])/nrow(dt[!is.na(nMSR_SA55),]),digits=3),"%"))
+
+plot(log10(dt$`Omi42_avgcount`),dt$nMSR_Omi42,main="Omi42",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
+abline(h=20*median.nMSR,col="red",lty=2)
+legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_Omi42 > 10*median.nMSR & !is.na(nMSR_Omi42),])/nrow(dt[!is.na(nMSR_Omi42),]),digits=3),"%"))
+
+plot(log10(dt$`S309_avgcount`),dt$nMSR_S309,main="S309",pch=19,col="#00000010",xlab="average cell count (log10)",ylab="nMSR",xlim=c(1,4),ylim=c(0,0.6))
+abline(h=20*median.nMSR,col="red",lty=2)
+legend("topleft",bty="n",cex=1,legend=paste(format(100*nrow(dt[nMSR_S309 > 10*median.nMSR & !is.na(nMSR_S309),])/nrow(dt[!is.na(nMSR_S309),]),digits=3),"%"))
 ```
 
 <img src="compute_EC50_files/figure-gfm/nMSR_v_cell_count-1.png" style="display: block; margin: auto;" />
@@ -1107,6 +1282,14 @@ dt[nMSR_S3L17_UCA > 20*median.nMSR,c("EC50_S3L17_UCA","EC50_SE_S3L17_UCA","respo
 dt[nMSR_S2V29_UCA > 20*median.nMSR,c("EC50_S2V29_UCA","EC50_SE_S2V29_UCA","response_S2V29_UCA","baseline_S2V29_UCA") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
 
 dt[nMSR_S309_887 > 20*median.nMSR,c("EC50_S309_887","EC50_SE_S309_887","response_S309_887","baseline_S309_887") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+
+dt[nMSR_S2X259 > 20*median.nMSR,c("EC50_S2X259","EC50_SE_S2X259","response_S2X259","baseline_S2X259") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+
+dt[nMSR_SA55 > 20*median.nMSR,c("EC50_SA55","EC50_SE_SA55","response_SA55","baseline_SA55") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+
+dt[nMSR_Omi42 > 20*median.nMSR,c("EC50_Omi42","EC50_SE_Omi42","response_Omi42","baseline_Omi42") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+
+dt[nMSR_S309 > 20*median.nMSR,c("EC50_S309","EC50_SE_S309","response_S309","baseline_S309") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
 ```
 
 ## Final scores
@@ -1273,6 +1456,85 @@ grid.arrange(p1,ncol=1)
 invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S309_887.pdf",sep="")))
 ```
 
+``` r
+p1 <- ggplot(dt[!is.na(EC50_S2X259),],aes(x=target,y=EC50_S2X259))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S2X259 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
+  facet_wrap(~library,nrow=1)+
+  scale_y_log10()
+
+grid.arrange(p1,ncol=1)
+```
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S2X259-1.png" style="display: block; margin: auto;" />
+
+``` r
+#save pdf
+invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S2X259.pdf",sep="")))
+```
+
+``` r
+p1 <- ggplot(dt[!is.na(EC50_SA55),],aes(x=target,y=EC50_SA55))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("SA55 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
+  facet_wrap(~library,nrow=1)+
+  scale_y_log10()
+
+grid.arrange(p1,ncol=1)
+```
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_SA55-1.png" style="display: block; margin: auto;" />
+
+``` r
+#save pdf
+invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_SA55.pdf",sep="")))
+```
+
+``` r
+p1 <- ggplot(dt[!is.na(EC50_Omi42),],aes(x=target,y=EC50_Omi42))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("Omi42 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
+  facet_wrap(~library,nrow=1)+
+  scale_y_log10()
+
+grid.arrange(p1,ncol=1)
+```
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_Omi42-1.png" style="display: block; margin: auto;" />
+
+``` r
+#save pdf
+invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_Omi42.pdf",sep="")))
+```
+
+``` r
+p1 <- ggplot(dt[!is.na(EC50_S309),],aes(x=target,y=EC50_S309))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S309 EC50")+xlab("target")+theme(axis.text.x=element_text(angle=-90,hjust=0))+
+  facet_wrap(~library,nrow=1)+
+  scale_y_log10()
+
+grid.arrange(p1,ncol=1)
+```
+
+    ## Warning: Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+    ## Groups with fewer than two data points have been dropped.
+
+<img src="compute_EC50_files/figure-gfm/binding_distribution_vioplot_S309-1.png" style="display: block; margin: auto;" />
+
+``` r
+#save pdf
+invisible(dev.print(pdf, paste(config$mAb_EC50_dir,"/violin-plot_EC50-by-target_S309.pdf",sep="")))
+```
+
 ## Save barcode-level metrics
 
 In the next script, we will collapse bcs down to final
@@ -1289,7 +1551,11 @@ dt[,.(library,barcode,target,variant_class,
      `S2K146_UCA_avgcount`,EC50_S2K146_UCA,
      `S3L17_avgcount`,EC50_S3L17,
      `S3L17_UCA_avgcount`,EC50_S3L17_UCA,
-     `S309_887_avgcount`,EC50_S309_887)] %>%
+     `S309_887_avgcount`,EC50_S309_887,
+     `S309_avgcount`,EC50_S309,
+     `S2X259_avgcount`,EC50_S2X259,
+     `SA55_avgcount`,EC50_SA55,
+     `Omi42_avgcount`,EC50_Omi42)] %>%
   mutate_if(is.numeric, round, digits=6) %>%
   write.csv(file=config$mAb_EC50_file, row.names=F)
 ```
