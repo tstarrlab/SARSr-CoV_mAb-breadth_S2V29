@@ -62,7 +62,7 @@ dt_expr[target=="SARS-CoV-2",target:="SARS-CoV-2_WH1"]
 
 Unfiltered, look at distribution of AUC scores
 
-```{r unfiltered_AUCs, echo=T, fig.width=10, fig.height=35, fig.align="center", dpi=300,dev="png"}
+```{r unfiltered_AUCs, echo=T, fig.width=10, fig.height=50, fig.align="center", dpi=300,dev="png"}
 p1 <- ggplot(dt[!is.na(EC50_S2V29_v37_2),],aes(x=target,y=log10(EC50_S2V29_v37_2)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S2V29_v37_2 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
@@ -95,16 +95,32 @@ p8 <- ggplot(dt[!is.na(EC50_S3L17_UCA),],aes(x=target,y=log10(EC50_S3L17_UCA)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17_UCA mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-p9 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=log10(EC50_S309_887)))+
+p9 <- ggplot(dt[!is.na(EC50_S309),],aes(x=target,y=log10(EC50_S309)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
-  ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+  ggtitle("S309 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,ncol=1)
+p10 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=log10(EC50_S309_887)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p11 <- ggplot(dt[!is.na(EC50_S2X259),],aes(x=target,y=log10(EC50_S2X259)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("S2X259 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p12 <- ggplot(dt[!is.na(EC50_SA55),],aes(x=target,y=log10(EC50_SA55)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("SA55 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p13 <- ggplot(dt[!is.na(EC50_Omi42),],aes(x=target,y=log10(EC50_Omi42)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("Omi42 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=1)
 ```
 
 Let's add a variable that flags the top and bottom 5% of expression scores for each variant, and see how violin plots look when censoring these top and bottom 10% of expressed barcodes. Let's *only* do this for targets that are in the many-barcode pool, not the spike-in targets that had between 2-5 barcodes total (but with much higher per-barcode cell counts for the titraitons!)
 
-```{r censor_5_AUCs, echo=T, fig.width=10, fig.height=35, fig.align="center", dpi=300,dev="png"}
+```{r censor_5_AUCs, echo=T, fig.width=10, fig.height=50, fig.align="center", dpi=300,dev="png"}
 dt[,`S2V29_v37_2_censor_lower`:=quantile(EC50_S2V29_v37_2,0.05,na.rm=T,type=7),by=c("library","target")]
 dt[,`S2V29_v37_2_censor_upper`:=quantile(EC50_S2V29_v37_2,0.95,na.rm=T,type=7),by=c("library","target")]
 
@@ -129,8 +145,20 @@ dt[,`S3L17_censor_upper`:=quantile(EC50_S3L17,0.95,na.rm=T,type=7),by=c("library
 dt[,`S3L17_UCA_censor_lower`:=quantile(EC50_S3L17_UCA,0.05,na.rm=T,type=7),by=c("library","target")]
 dt[,`S3L17_UCA_censor_upper`:=quantile(EC50_S3L17_UCA,0.95,na.rm=T,type=7),by=c("library","target")]
 
+dt[,`S309_censor_lower`:=quantile(EC50_S309,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`S309_censor_upper`:=quantile(EC50_S309,0.95,na.rm=T,type=7),by=c("library","target")]
+
 dt[,`S309_887_censor_lower`:=quantile(EC50_S309_887,0.05,na.rm=T,type=7),by=c("library","target")]
 dt[,`S309_887_censor_upper`:=quantile(EC50_S309_887,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`S2X259_censor_lower`:=quantile(EC50_S2X259,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`S2X259_censor_upper`:=quantile(EC50_S2X259,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`SA55_censor_lower`:=quantile(EC50_SA55,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`SA55_censor_upper`:=quantile(EC50_SA55,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`Omi42_censor_lower`:=quantile(EC50_Omi42,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`Omi42_censor_upper`:=quantile(EC50_Omi42,0.95,na.rm=T,type=7),by=c("library","target")]
 
 p1 <- ggplot(dt[!is.na(EC50_S2V29_v37_2) & ((EC50_S2V29_v37_2 > S2V29_v37_2_censor_lower & EC50_S2V29_v37_2 < S2V29_v37_2_censor_upper) | target %in% config$targets_low_bc) ,],
              aes(x=target,y=log10(EC50_S2V29_v37_2)))+
@@ -172,19 +200,39 @@ p8 <- ggplot(dt[!is.na(EC50_S3L17_UCA) & ((EC50_S3L17_UCA > S3L17_UCA_censor_low
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17_UCA mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-p9 <- ggplot(dt[!is.na(EC50_S309_887) & ((EC50_S309_887 > S309_887_censor_lower & EC50_S309_887 < S309_887_censor_upper) | target %in% config$targets_low_bc),],
+p9 <- ggplot(dt[!is.na(EC50_S309) & ((EC50_S309 > S309_censor_lower & EC50_S309 < S309_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_S309)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S309 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p10 <- ggplot(dt[!is.na(EC50_S309_887) & ((EC50_S309_887 > S309_887_censor_lower & EC50_S309_887 < S309_887_censor_upper) | target %in% config$targets_low_bc),],
              aes(x=target,y=log10(EC50_S309_887)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
+p11 <- ggplot(dt[!is.na(EC50_S2X259) & ((EC50_S2X259 > S2X259_censor_lower & EC50_S2X259 < S2X259_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_S2X259)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S2X259 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,ncol=1)
+p12 <- ggplot(dt[!is.na(EC50_SA55) & ((EC50_SA55 > SA55_censor_lower & EC50_SA55 < SA55_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_SA55)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("SA55 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p13 <- ggplot(dt[!is.na(EC50_Omi42) & ((EC50_Omi42 > Omi42_censor_lower & EC50_Omi42 < Omi42_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_Omi42)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("Omi42 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=1)
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/lib61_vioplots_AUC-cens.pdf",sep="")))
 ```
 
 Calculate the mean (geometric mean) per variant, the standard deviation, and the number of (post-filter) barcodes on which a variant score was determined
 
-````{r calculate_mean_scores}
+```{r calculate_mean_scores}
 #apply the censors to NA out the phenotypes outside the range for the targets that aren't in the 2-5 higher-count barcode spike in list
 dt[!(target %in% config$targets_low_bc) & (EC50_S2V29_v37_2 < `S2V29_v37_2_censor_lower` | EC50_S2V29_v37_2 > `S2V29_v37_2_censor_upper`), EC50_S2V29_v37_2:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S2V29 < `S2V29_censor_lower` | EC50_S2V29 > `S2V29_censor_upper`), EC50_S2V29:=NA]
@@ -194,7 +242,11 @@ dt[!(target %in% config$targets_low_bc) & (EC50_S2K146 < `S2K146_censor_lower` |
 dt[!(target %in% config$targets_low_bc) & (EC50_S2K146_UCA < `S2K146_UCA_censor_lower` | EC50_S2K146_UCA > `S2K146_UCA_censor_upper`), EC50_S2K146_UCA:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S3L17 < `S3L17_censor_lower` | EC50_S3L17 > `S3L17_censor_upper`), EC50_S3L17:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S3L17_UCA < `S3L17_UCA_censor_lower` | EC50_S3L17_UCA > `S3L17_UCA_censor_upper`), EC50_S3L17_UCA:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_S309 < `S309_censor_lower` | EC50_S309 > `S309_censor_upper`), EC50_S309:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S309_887 < `S309_887_censor_lower` | EC50_S309_887 > `S309_887_censor_upper`), EC50_S309_887:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_S2X259 < `S2X259_censor_lower` | EC50_S2X259 > `S2X259_censor_upper`), EC50_S2X259:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_SA55 < `SA55_censor_lower` | EC50_SA55 > `SA55_censor_upper`), EC50_SA55:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_Omi42 < `Omi42_censor_lower` | EC50_Omi42 > `Omi42_censor_upper`), EC50_Omi42:=NA]
 
 #calculate geomean, sd, and # bcs collapsed per genotype
 dt[,mean_EC50_S2V29_v37_2:=10^mean(log10(EC50_S2V29_v37_2),na.rm=T),by=c("library","target")]
@@ -229,9 +281,25 @@ dt[,mean_EC50_S3L17_UCA:=10^mean(log10(EC50_S3L17_UCA),na.rm=T),by=c("library","
 dt[,sd_EC50_S3L17_UCA:=sd(log10(EC50_S3L17_UCA),na.rm=T),by=c("library","target")]
 dt[,n_bc_EC50_S3L17_UCA:=sum(!is.na(EC50_S3L17_UCA)),by=c("library","target")]
 
+dt[,mean_EC50_S309:=10^mean(log10(EC50_S309),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_S309:=sd(log10(EC50_S309),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_S309:=sum(!is.na(EC50_S309)),by=c("library","target")]
+
 dt[,mean_EC50_S309_887:=10^mean(log10(EC50_S309_887),na.rm=T),by=c("library","target")]
 dt[,sd_EC50_S309_887:=sd(log10(EC50_S309_887),na.rm=T),by=c("library","target")]
 dt[,n_bc_EC50_S309_887:=sum(!is.na(EC50_S309_887)),by=c("library","target")]
+
+dt[,mean_EC50_S2X259:=10^mean(log10(EC50_S2X259),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_S2X259:=sd(log10(EC50_S2X259),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_S2X259:=sum(!is.na(EC50_S2X259)),by=c("library","target")]
+
+dt[,mean_EC50_SA55:=10^mean(log10(EC50_SA55),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_SA55:=sd(log10(EC50_SA55),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_SA55:=sum(!is.na(EC50_SA55)),by=c("library","target")]
+
+dt[,mean_EC50_Omi42:=10^mean(log10(EC50_Omi42),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_Omi42:=sd(log10(EC50_Omi42),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_Omi42:=sum(!is.na(EC50_Omi42)),by=c("library","target")]
 
 ```
 
@@ -247,15 +315,19 @@ dt_final <- dt[,.(library,target,variant_class,
                   mean_EC50_S2K146_UCA, sd_EC50_S2K146_UCA, n_bc_EC50_S2K146_UCA,
                   mean_EC50_S3L17, sd_EC50_S3L17, n_bc_EC50_S3L17,
                   mean_EC50_S3L17_UCA, sd_EC50_S3L17_UCA, n_bc_EC50_S3L17_UCA,
-                  mean_EC50_S309_887, sd_EC50_S309_887, n_bc_EC50_S309_887)]
+                  mean_EC50_S309, sd_EC50_S309, n_bc_EC50_S309,
+                  mean_EC50_S309_887, sd_EC50_S309_887, n_bc_EC50_S309_887,
+                  mean_EC50_S2X259, sd_EC50_S2X259, n_bc_EC50_S2X259,
+                  mean_EC50_SA55, sd_EC50_SA55, n_bc_EC50_SA55,
+                  mean_EC50_Omi42, sd_EC50_Omi42, n_bc_EC50_Omi42)]
 
 dt_final <- unique(dt_final); setkey(dt_final, target)
 ```
 
 Let's look how SEM is distributed. Can see that SEM is generally very, very low. Also that it doesn't really have a relationship with the EC50 metric, which is good.
 
-```{r plot_SEMs, echo=T, fig.width=9, fig.height=9, fig.align="center", dpi=300,dev="png"}
-par(mfrow=c(3,3))
+```{r plot_SEMs, echo=T, fig.width=12, fig.height=12, fig.align="center", dpi=300,dev="png"}
+par(mfrow=c(4,4))
 #S2V29_v37_2
 x <- log10(dt_final[,mean_EC50_S2V29_v37_2]); y <- dt_final[,sd_EC50_S2V29_v37_2/sqrt(n_bc_EC50_S2V29_v37_2)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S2V29_v37_2")
 
@@ -280,8 +352,20 @@ x <- log10(dt_final[,mean_EC50_S3L17]); y <- dt_final[,sd_EC50_S3L17/sqrt(n_bc_E
 #S3L17_UCA
 x <- log10(dt_final[,mean_EC50_S3L17_UCA]); y <- dt_final[,sd_EC50_S3L17_UCA/sqrt(n_bc_EC50_S3L17_UCA)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S3L17_UCA")
 
+#S309
+x <- log10(dt_final[,mean_EC50_S309]); y <- dt_final[,sd_EC50_S309/sqrt(n_bc_EC50_S309)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S309")
+
 #S309_887
 x <- log10(dt_final[,mean_EC50_S309_887]); y <- dt_final[,sd_EC50_S309_887/sqrt(n_bc_EC50_S309_887)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S309_887")
+
+#S2X259
+x <- log10(dt_final[,mean_EC50_S2X259]); y <- dt_final[,sd_EC50_S2X259/sqrt(n_bc_EC50_S2X259)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S2X259")
+
+#SA55
+x <- log10(dt_final[,mean_EC50_SA55]); y <- dt_final[,sd_EC50_SA55/sqrt(n_bc_EC50_SA55)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="SA55")
+
+#Omi42
+x <- log10(dt_final[,mean_EC50_Omi42]); y <- dt_final[,sd_EC50_Omi42/sqrt(n_bc_EC50_Omi42)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="Omi42")
 
 
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/SEM-v-EC50.pdf",sep=""),useDingbats=F))
@@ -317,13 +401,17 @@ dt_final[target %in% c("HKU3-8","AncSARS1a_alt"),c("mean_EC50_S2V29_v37_2","sd_E
                                                    "mean_EC50_S2K146_UCA","sd_EC50_S2K146_UCA","n_bc_EC50_S2K146_UCA",
                                                    "mean_EC50_S3L17","sd_EC50_S3L17","n_bc_EC50_S3L17",
                                                    "mean_EC50_S3L17_UCA","sd_EC50_S3L17_UCA","n_bc_EC50_S3L17_UCA",
-                                                   "mean_EC50_S309_887","sd_EC50_S309_887","n_bc_EC50_S309_887"):=NA]
+                                                   "mean_EC50_S309","sd_EC50_S309","n_bc_EC50_S309",
+                                                   "mean_EC50_S309_887","sd_EC50_S309_887","n_bc_EC50_S309_887",
+                                                   "mean_EC50_S2X259","sd_EC50_S2X259","n_bc_EC50_S2X259",
+                                                   "mean_EC50_SA55","sd_EC50_SA55","n_bc_EC50_SA55",
+                                                   "mean_EC50_Omi42","sd_EC50_Omi42","n_bc_EC50_Omi42"):=NA]
 ```
 
 Coverage stats on n_barcodes for different measurements in the final pooled measurements.
 
-```{r n_barcode_plots, echo=T, fig.width=12, fig.height=9, fig.align="center", dpi=300,dev="png"}
-par(mfrow=c(3,3))
+```{r n_barcode_plots, echo=T, fig.width=16, fig.height=12, fig.align="center", dpi=300,dev="png"}
+par(mfrow=c(4,4))
 
 hist(dt_final$n_bc_EC50_S2V29_v37_2,col="gray50",main=paste("S2V29_v37_2,\nmedian ",median(dt_final$n_bc_EC50_S2V29_v37_2,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
@@ -341,7 +429,15 @@ hist(dt_final$n_bc_EC50_S3L17,col="gray50",main=paste("S3L17,\nmedian ",median(d
 
 hist(dt_final$n_bc_EC50_S3L17_UCA,col="gray50",main=paste("S3L17_UCA,\nmedian ",median(dt_final$n_bc_EC50_S3L17_UCA,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
+hist(dt_final$n_bc_EC50_S309,col="gray50",main=paste("S309,\nmedian ",median(dt_final$n_bc_EC50_S309,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
 hist(dt_final$n_bc_EC50_S309_887,col="gray50",main=paste("S309_887,\nmedian ",median(dt_final$n_bc_EC50_S309_887,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
+hist(dt_final$n_bc_EC50_S2X259,col="gray50",main=paste("S2X259,\nmedian ",median(dt_final$n_bc_EC50_S2X259,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
+hist(dt_final$n_bc_EC50_SA55,col="gray50",main=paste("SA55,\nmedian ",median(dt_final$n_bc_EC50_SA55,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
+hist(dt_final$n_bc_EC50_Omi42,col="gray50",main=paste("Omi42,\nmedian ",median(dt_final$n_bc_EC50_Omi42,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/lib61_hist_n_barcodes.pdf",sep="")))
 ```
@@ -360,7 +456,11 @@ setnames(dt_final,"mean_EC50_S2K146","EC50_S2K146")
 setnames(dt_final,"mean_EC50_S2K146_UCA","EC50_S2K146_UCA")
 setnames(dt_final,"mean_EC50_S3L17","EC50_S3L17")
 setnames(dt_final,"mean_EC50_S3L17_UCA","EC50_S3L17_UCA")
+setnames(dt_final,"mean_EC50_S309","EC50_S309")
 setnames(dt_final,"mean_EC50_S309_887","EC50_S309_887")
+setnames(dt_final,"mean_EC50_S2X259","EC50_S2X259")
+setnames(dt_final,"mean_EC50_SA55","EC50_SA55")
+setnames(dt_final,"mean_EC50_Omi42","EC50_Omi42")
 
 ```
 
@@ -368,11 +468,11 @@ setnames(dt_final,"mean_EC50_S309_887","EC50_S309_887")
 
 Output heatmaps illustrating all wildtype variants with separate columns for each mAb.
 
-```{r heatmap_wildtypes_all_EC50, fig.width=12,fig.height=4,fig.align="center", dpi=500,dev="png",echo=T}
+```{r heatmap_wildtypes_all_EC50, fig.width=12,fig.height=5.5,fig.align="center", dpi=500,dev="png",echo=T}
 #make temp long-form data frame
-temp1 <- data.table::melt(dt_final[,.(target, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2)],
+temp1 <- data.table::melt(dt_final[,.(target, EC50_S309, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2, EC50_SA55, EC50_Omi42, EC50_S309)],
                           id.vars=c("target"),
-                          measure.vars=c("EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2"),
+                          measure.vars=c("EC50_S309", "EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2", "EC50_SA55", "EC50_Omi42", "EC50_S309"),
                           variable.name="mAb",value.name="EC50")
 
 temp1$log10_EC50 <- log10(temp1$EC50)
@@ -391,7 +491,7 @@ invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/lib61_heatmap_E
 ```
 Showing just extant sarbs.
 
-```{r heatmap_wildtypes_extants_EC50, fig.width=12,fig.height=4,fig.align="center", dpi=500,dev="png",echo=T}
+```{r heatmap_wildtypes_extants_EC50, fig.width=12,fig.height=5.5,fig.align="center", dpi=500,dev="png",echo=T}
 #make temp long-form data frame
 extant <- c(config$EurAf_extant,config$RsYN04_extant,config$SARS2_extant,config$SARS1_extant,config$Clade2_extant)
 
@@ -412,7 +512,7 @@ invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/lib61_heatmap_E
 
 And for ancestors.
 
-```{r heatmap_wildtypes_MAP-ancestors_EC50, fig.width=8,fig.height=4,fig.align="center", dpi=500,dev="png",echo=T}
+```{r heatmap_wildtypes_MAP-ancestors_EC50, fig.width=8,fig.height=5.5,fig.align="center", dpi=500,dev="png",echo=T}
 #make temp long-form data frame
 ancestors <- c(config$ancestors_MAP)
 

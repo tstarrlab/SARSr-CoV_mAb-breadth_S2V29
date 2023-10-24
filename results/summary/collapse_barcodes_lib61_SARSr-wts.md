@@ -150,11 +150,27 @@ p8 <- ggplot(dt[!is.na(EC50_S3L17_UCA),],aes(x=target,y=log10(EC50_S3L17_UCA)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17_UCA mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-p9 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=log10(EC50_S309_887)))+
+p9 <- ggplot(dt[!is.na(EC50_S309),],aes(x=target,y=log10(EC50_S309)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
-  ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+  ggtitle("S309 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,ncol=1)
+p10 <- ggplot(dt[!is.na(EC50_S309_887),],aes(x=target,y=log10(EC50_S309_887)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p11 <- ggplot(dt[!is.na(EC50_S2X259),],aes(x=target,y=log10(EC50_S2X259)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("S2X259 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p12 <- ggplot(dt[!is.na(EC50_SA55),],aes(x=target,y=log10(EC50_SA55)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("SA55 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p13 <- ggplot(dt[!is.na(EC50_Omi42),],aes(x=target,y=log10(EC50_Omi42)))+
+   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+   ggtitle("Omi42 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=1)
 ```
 
     ## Warning: Groups with fewer than two data points have been dropped.
@@ -195,8 +211,20 @@ dt[,`S3L17_censor_upper`:=quantile(EC50_S3L17,0.95,na.rm=T,type=7),by=c("library
 dt[,`S3L17_UCA_censor_lower`:=quantile(EC50_S3L17_UCA,0.05,na.rm=T,type=7),by=c("library","target")]
 dt[,`S3L17_UCA_censor_upper`:=quantile(EC50_S3L17_UCA,0.95,na.rm=T,type=7),by=c("library","target")]
 
+dt[,`S309_censor_lower`:=quantile(EC50_S309,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`S309_censor_upper`:=quantile(EC50_S309,0.95,na.rm=T,type=7),by=c("library","target")]
+
 dt[,`S309_887_censor_lower`:=quantile(EC50_S309_887,0.05,na.rm=T,type=7),by=c("library","target")]
 dt[,`S309_887_censor_upper`:=quantile(EC50_S309_887,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`S2X259_censor_lower`:=quantile(EC50_S2X259,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`S2X259_censor_upper`:=quantile(EC50_S2X259,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`SA55_censor_lower`:=quantile(EC50_SA55,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`SA55_censor_upper`:=quantile(EC50_SA55,0.95,na.rm=T,type=7),by=c("library","target")]
+
+dt[,`Omi42_censor_lower`:=quantile(EC50_Omi42,0.05,na.rm=T,type=7),by=c("library","target")]
+dt[,`Omi42_censor_upper`:=quantile(EC50_Omi42,0.95,na.rm=T,type=7),by=c("library","target")]
 
 p1 <- ggplot(dt[!is.na(EC50_S2V29_v37_2) & ((EC50_S2V29_v37_2 > S2V29_v37_2_censor_lower & EC50_S2V29_v37_2 < S2V29_v37_2_censor_upper) | target %in% config$targets_low_bc) ,],
              aes(x=target,y=log10(EC50_S2V29_v37_2)))+
@@ -238,13 +266,33 @@ p8 <- ggplot(dt[!is.na(EC50_S3L17_UCA) & ((EC50_S3L17_UCA > S3L17_UCA_censor_low
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S3L17_UCA mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-p9 <- ggplot(dt[!is.na(EC50_S309_887) & ((EC50_S309_887 > S309_887_censor_lower & EC50_S309_887 < S309_887_censor_upper) | target %in% config$targets_low_bc),],
+p9 <- ggplot(dt[!is.na(EC50_S309) & ((EC50_S309 > S309_censor_lower & EC50_S309 < S309_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_S309)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S309 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p10 <- ggplot(dt[!is.na(EC50_S309_887) & ((EC50_S309_887 > S309_887_censor_lower & EC50_S309_887 < S309_887_censor_upper) | target %in% config$targets_low_bc),],
              aes(x=target,y=log10(EC50_S309_887)))+
   geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
   ggtitle("S309_887 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
+p11 <- ggplot(dt[!is.na(EC50_S2X259) & ((EC50_S2X259 > S2X259_censor_lower & EC50_S2X259 < S2X259_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_S2X259)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("S2X259 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,ncol=1)
+p12 <- ggplot(dt[!is.na(EC50_SA55) & ((EC50_SA55 > SA55_censor_lower & EC50_SA55 < SA55_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_SA55)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("SA55 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+p13 <- ggplot(dt[!is.na(EC50_Omi42) & ((EC50_Omi42 > Omi42_censor_lower & EC50_Omi42 < Omi42_censor_upper) | target %in% config$targets_low_bc),],
+             aes(x=target,y=log10(EC50_Omi42)))+
+  geom_violin(scale="width")+stat_summary(fun=median,geom="point",size=1)+
+  ggtitle("Omi42 mAb binding")+xlab("homolog")+theme(axis.text.x=element_text(angle=-90,hjust=0))
+
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=1)
 ```
 
     ## Warning: Groups with fewer than two data points have been dropped.
@@ -270,7 +318,11 @@ dt[!(target %in% config$targets_low_bc) & (EC50_S2K146 < `S2K146_censor_lower` |
 dt[!(target %in% config$targets_low_bc) & (EC50_S2K146_UCA < `S2K146_UCA_censor_lower` | EC50_S2K146_UCA > `S2K146_UCA_censor_upper`), EC50_S2K146_UCA:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S3L17 < `S3L17_censor_lower` | EC50_S3L17 > `S3L17_censor_upper`), EC50_S3L17:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S3L17_UCA < `S3L17_UCA_censor_lower` | EC50_S3L17_UCA > `S3L17_UCA_censor_upper`), EC50_S3L17_UCA:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_S309 < `S309_censor_lower` | EC50_S309 > `S309_censor_upper`), EC50_S309:=NA]
 dt[!(target %in% config$targets_low_bc) & (EC50_S309_887 < `S309_887_censor_lower` | EC50_S309_887 > `S309_887_censor_upper`), EC50_S309_887:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_S2X259 < `S2X259_censor_lower` | EC50_S2X259 > `S2X259_censor_upper`), EC50_S2X259:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_SA55 < `SA55_censor_lower` | EC50_SA55 > `SA55_censor_upper`), EC50_SA55:=NA]
+dt[!(target %in% config$targets_low_bc) & (EC50_Omi42 < `Omi42_censor_lower` | EC50_Omi42 > `Omi42_censor_upper`), EC50_Omi42:=NA]
 
 #calculate geomean, sd, and # bcs collapsed per genotype
 dt[,mean_EC50_S2V29_v37_2:=10^mean(log10(EC50_S2V29_v37_2),na.rm=T),by=c("library","target")]
@@ -305,9 +357,25 @@ dt[,mean_EC50_S3L17_UCA:=10^mean(log10(EC50_S3L17_UCA),na.rm=T),by=c("library","
 dt[,sd_EC50_S3L17_UCA:=sd(log10(EC50_S3L17_UCA),na.rm=T),by=c("library","target")]
 dt[,n_bc_EC50_S3L17_UCA:=sum(!is.na(EC50_S3L17_UCA)),by=c("library","target")]
 
+dt[,mean_EC50_S309:=10^mean(log10(EC50_S309),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_S309:=sd(log10(EC50_S309),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_S309:=sum(!is.na(EC50_S309)),by=c("library","target")]
+
 dt[,mean_EC50_S309_887:=10^mean(log10(EC50_S309_887),na.rm=T),by=c("library","target")]
 dt[,sd_EC50_S309_887:=sd(log10(EC50_S309_887),na.rm=T),by=c("library","target")]
 dt[,n_bc_EC50_S309_887:=sum(!is.na(EC50_S309_887)),by=c("library","target")]
+
+dt[,mean_EC50_S2X259:=10^mean(log10(EC50_S2X259),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_S2X259:=sd(log10(EC50_S2X259),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_S2X259:=sum(!is.na(EC50_S2X259)),by=c("library","target")]
+
+dt[,mean_EC50_SA55:=10^mean(log10(EC50_SA55),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_SA55:=sd(log10(EC50_SA55),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_SA55:=sum(!is.na(EC50_SA55)),by=c("library","target")]
+
+dt[,mean_EC50_Omi42:=10^mean(log10(EC50_Omi42),na.rm=T),by=c("library","target")]
+dt[,sd_EC50_Omi42:=sd(log10(EC50_Omi42),na.rm=T),by=c("library","target")]
+dt[,n_bc_EC50_Omi42:=sum(!is.na(EC50_Omi42)),by=c("library","target")]
 ```
 
 Collapse down to tables reporting just the summary statistics for each
@@ -323,7 +391,11 @@ dt_final <- dt[,.(library,target,variant_class,
                   mean_EC50_S2K146_UCA, sd_EC50_S2K146_UCA, n_bc_EC50_S2K146_UCA,
                   mean_EC50_S3L17, sd_EC50_S3L17, n_bc_EC50_S3L17,
                   mean_EC50_S3L17_UCA, sd_EC50_S3L17_UCA, n_bc_EC50_S3L17_UCA,
-                  mean_EC50_S309_887, sd_EC50_S309_887, n_bc_EC50_S309_887)]
+                  mean_EC50_S309, sd_EC50_S309, n_bc_EC50_S309,
+                  mean_EC50_S309_887, sd_EC50_S309_887, n_bc_EC50_S309_887,
+                  mean_EC50_S2X259, sd_EC50_S2X259, n_bc_EC50_S2X259,
+                  mean_EC50_SA55, sd_EC50_SA55, n_bc_EC50_SA55,
+                  mean_EC50_Omi42, sd_EC50_Omi42, n_bc_EC50_Omi42)]
 
 dt_final <- unique(dt_final); setkey(dt_final, target)
 ```
@@ -333,7 +405,7 @@ very low. Also that it doesn’t really have a relationship with the EC50
 metric, which is good.
 
 ``` r
-par(mfrow=c(3,3))
+par(mfrow=c(4,4))
 #S2V29_v37_2
 x <- log10(dt_final[,mean_EC50_S2V29_v37_2]); y <- dt_final[,sd_EC50_S2V29_v37_2/sqrt(n_bc_EC50_S2V29_v37_2)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S2V29_v37_2")
 
@@ -358,15 +430,26 @@ x <- log10(dt_final[,mean_EC50_S3L17]); y <- dt_final[,sd_EC50_S3L17/sqrt(n_bc_E
 #S3L17_UCA
 x <- log10(dt_final[,mean_EC50_S3L17_UCA]); y <- dt_final[,sd_EC50_S3L17_UCA/sqrt(n_bc_EC50_S3L17_UCA)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S3L17_UCA")
 
+#S309
+x <- log10(dt_final[,mean_EC50_S309]); y <- dt_final[,sd_EC50_S309/sqrt(n_bc_EC50_S309)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S309")
+
 #S309_887
 x <- log10(dt_final[,mean_EC50_S309_887]); y <- dt_final[,sd_EC50_S309_887/sqrt(n_bc_EC50_S309_887)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S309_887")
+
+#S2X259
+x <- log10(dt_final[,mean_EC50_S2X259]); y <- dt_final[,sd_EC50_S2X259/sqrt(n_bc_EC50_S2X259)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="S2X259")
+
+#SA55
+x <- log10(dt_final[,mean_EC50_SA55]); y <- dt_final[,sd_EC50_SA55/sqrt(n_bc_EC50_SA55)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="SA55")
+
+#Omi42
+x <- log10(dt_final[,mean_EC50_Omi42]); y <- dt_final[,sd_EC50_Omi42/sqrt(n_bc_EC50_Omi42)]; plot(x,y,pch=16,col="#00000090",xlab="EC50",ylab="SEM",main="Omi42")
+
+
+invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/SEM-v-EC50.pdf",sep=""),useDingbats=F))
 ```
 
 <img src="collapse_barcodes_lib61_SARSr-wts_files/figure-gfm/plot_SEMs-1.png" style="display: block; margin: auto;" />
-
-``` r
-invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/SEM-v-EC50.pdf",sep=""),useDingbats=F))
-```
 
 Add in the previously-measured expression values.
 
@@ -398,14 +481,18 @@ dt_final[target %in% c("HKU3-8","AncSARS1a_alt"),c("mean_EC50_S2V29_v37_2","sd_E
                                                    "mean_EC50_S2K146_UCA","sd_EC50_S2K146_UCA","n_bc_EC50_S2K146_UCA",
                                                    "mean_EC50_S3L17","sd_EC50_S3L17","n_bc_EC50_S3L17",
                                                    "mean_EC50_S3L17_UCA","sd_EC50_S3L17_UCA","n_bc_EC50_S3L17_UCA",
-                                                   "mean_EC50_S309_887","sd_EC50_S309_887","n_bc_EC50_S309_887"):=NA]
+                                                   "mean_EC50_S309","sd_EC50_S309","n_bc_EC50_S309",
+                                                   "mean_EC50_S309_887","sd_EC50_S309_887","n_bc_EC50_S309_887",
+                                                   "mean_EC50_S2X259","sd_EC50_S2X259","n_bc_EC50_S2X259",
+                                                   "mean_EC50_SA55","sd_EC50_SA55","n_bc_EC50_SA55",
+                                                   "mean_EC50_Omi42","sd_EC50_Omi42","n_bc_EC50_Omi42"):=NA]
 ```
 
 Coverage stats on n_barcodes for different measurements in the final
 pooled measurements.
 
 ``` r
-par(mfrow=c(3,3))
+par(mfrow=c(4,4))
 
 hist(dt_final$n_bc_EC50_S2V29_v37_2,col="gray50",main=paste("S2V29_v37_2,\nmedian ",median(dt_final$n_bc_EC50_S2V29_v37_2,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
@@ -423,15 +510,20 @@ hist(dt_final$n_bc_EC50_S3L17,col="gray50",main=paste("S3L17,\nmedian ",median(d
 
 hist(dt_final$n_bc_EC50_S3L17_UCA,col="gray50",main=paste("S3L17_UCA,\nmedian ",median(dt_final$n_bc_EC50_S3L17_UCA,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
+hist(dt_final$n_bc_EC50_S309,col="gray50",main=paste("S309,\nmedian ",median(dt_final$n_bc_EC50_S309,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
 hist(dt_final$n_bc_EC50_S309_887,col="gray50",main=paste("S309_887,\nmedian ",median(dt_final$n_bc_EC50_S309_887,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
-```
 
-<img src="collapse_barcodes_lib61_SARSr-wts_files/figure-gfm/n_barcode_plots-1.png" style="display: block; margin: auto;" />
+hist(dt_final$n_bc_EC50_S2X259,col="gray50",main=paste("S2X259,\nmedian ",median(dt_final$n_bc_EC50_S2X259,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
 
-``` r
+hist(dt_final$n_bc_EC50_SA55,col="gray50",main=paste("SA55,\nmedian ",median(dt_final$n_bc_EC50_SA55,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
+hist(dt_final$n_bc_EC50_Omi42,col="gray50",main=paste("Omi42,\nmedian ",median(dt_final$n_bc_EC50_Omi42,na.rm=T),sep=""),xlab="number barcodes",ylab="number genotypes",breaks=20)
+
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/lib61_hist_n_barcodes.pdf",sep="")))
 ```
 
+<img src="collapse_barcodes_lib61_SARSr-wts_files/figure-gfm/n_barcode_plots-1.png" style="display: block; margin: auto;" />
 Order factor variables for plotting
 
 ``` r
@@ -447,7 +539,11 @@ setnames(dt_final,"mean_EC50_S2K146","EC50_S2K146")
 setnames(dt_final,"mean_EC50_S2K146_UCA","EC50_S2K146_UCA")
 setnames(dt_final,"mean_EC50_S3L17","EC50_S3L17")
 setnames(dt_final,"mean_EC50_S3L17_UCA","EC50_S3L17_UCA")
+setnames(dt_final,"mean_EC50_S309","EC50_S309")
 setnames(dt_final,"mean_EC50_S309_887","EC50_S309_887")
+setnames(dt_final,"mean_EC50_S2X259","EC50_S2X259")
+setnames(dt_final,"mean_EC50_SA55","EC50_SA55")
+setnames(dt_final,"mean_EC50_Omi42","EC50_Omi42")
 ```
 
 ## Heatmaps!
@@ -457,9 +553,9 @@ for each mAb.
 
 ``` r
 #make temp long-form data frame
-temp1 <- data.table::melt(dt_final[,.(target, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2)],
+temp1 <- data.table::melt(dt_final[,.(target, EC50_S309, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2, EC50_SA55, EC50_Omi42, EC50_S309)],
                           id.vars=c("target"),
-                          measure.vars=c("EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2"),
+                          measure.vars=c("EC50_S309", "EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2", "EC50_SA55", "EC50_Omi42", "EC50_S309"),
                           variable.name="mAb",value.name="EC50")
 
 temp1$log10_EC50 <- log10(temp1$EC50)
