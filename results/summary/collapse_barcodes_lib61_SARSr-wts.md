@@ -553,9 +553,9 @@ for each mAb.
 
 ``` r
 #make temp long-form data frame
-temp1 <- data.table::melt(dt_final[,.(target, EC50_S309, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2, EC50_SA55, EC50_Omi42, EC50_S309)],
+temp1 <- data.table::melt(dt_final[,.(target, EC50_S309, EC50_S309_887, EC50_S3L17_UCA, EC50_S3L17, EC50_S2K146_UCA,EC50_S2K146,EC50_S2K146_v860,EC50_S2V29_UCA,EC50_S2V29 ,EC50_S2V29_v37_2, EC50_S2X259, EC50_SA55, EC50_Omi42)],
                           id.vars=c("target"),
-                          measure.vars=c("EC50_S309", "EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2", "EC50_SA55", "EC50_Omi42", "EC50_S309"),
+                          measure.vars=c("EC50_S309", "EC50_S309_887", "EC50_S3L17_UCA", "EC50_S3L17", "EC50_S2K146_UCA","EC50_S2K146","EC50_S2K146_v860","EC50_S2V29_UCA","EC50_S2V29", "EC50_S2V29_v37_2", "EC50_S2X259", "EC50_SA55", "EC50_Omi42"),
                           variable.name="mAb",value.name="EC50")
 
 temp1$log10_EC50 <- log10(temp1$EC50)
