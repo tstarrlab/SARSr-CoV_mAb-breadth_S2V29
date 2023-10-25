@@ -1,6 +1,6 @@
 # Mutational antigenic profiling of a pan-sarbecovirus vaccine against diverse SARS-related coronaviruses
 
-Study and analysis by Will Foreman, Tyler Starr, and co-authors.
+Study and analysis by Will Foreman, Ashley Taylor, Tyler Starr, and co-authors.
 
 ## Summary of workflow and results
 For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
