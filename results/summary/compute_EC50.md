@@ -430,10 +430,10 @@ for(i in 1:nrow(barcode_runs)){
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin2 is 10.0764609170439"
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin3 is 23.4117647058824"
     ## [1] "read:cell ratio for lib61_SARSr-wts Omi42_06_bin4 is 30"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin1 is 9.82716462736652"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin2 is 9.75716834658486"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin3 is 12.7149885520072"
-    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin4 is 11.755833845219"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin1 is 4.92446444128844"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin2 is 67.0309810962802"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin3 is 43.3109865592861"
+    ## [1] "read:cell ratio for lib61_SARSr-wts S309_01_bin4 is 6.14349513746157"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin1 is 12.1037969242642"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin2 is 11.8167171832394"
     ## [1] "read:cell ratio for lib61_SARSr-wts S309_02_bin3 is 13.7895752488611"
@@ -927,12 +927,12 @@ our library barcodes. We will also spot check titration curves from
 across our measurement range, and spot check curves whose fit parameters
 hit the different boundary conditions of the fit variables.
 
-We successfully generated EC50 estimates for 0.6998345 of our S2K146 mAb
-measurements, 0.7028266 of the S3L17 mAb, 0.7582442 of S2V29, 0.723453
-of S2K146_v860, 0.7581169 of S2V29_v37_2, 0.7029857 of S2K146_UCA,
-0.6860517 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.7046409 of S309_887,
-0.7000573 of our S2X259 mAb measurements, 0.6790171 of our SA55 mAb
-measurements, 0.6383053 of our Omi42 mAb measurements, 0.6907308 of our
+We successfully generated EC50 estimates for 0.6995798 of our S2K146 mAb
+measurements, 0.7022218 of the S3L17 mAb, 0.7582124 of S2V29, 0.7230074
+of S2K146_v860, 0.7581169 of S2V29_v37_2, 0.7031767 of S2K146_UCA,
+0.6858289 of S3L17_UCA, 0.7225618 of S2V29_UCA, 0.7045773 of S309_887,
+0.7000891 of our S2X259 mAb measurements, 0.6790171 of our SA55 mAb
+measurements, 0.6378597 of our Omi42 mAb measurements, 0.6928953 of our
 S309 mAb measurements.
 
 ``` r
