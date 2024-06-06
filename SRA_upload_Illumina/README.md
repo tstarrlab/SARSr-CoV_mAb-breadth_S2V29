@@ -2,7 +2,7 @@
 
 Before publishing your study, you need to make the raw data available.
 Here is how to upload FASTQ files to the NCBI [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra).
-The files are uploaded to a newly created BioProject [PRJNA714677](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA714677), which is set up to store all deep mutational scanning and mutational antigenic profiling experiments that use the v1 homologs libraries described in this work.
+The files are uploaded to a newly created BioProject [PRJNA714677](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA714677), which is set up to store all deep mutational scanning and mutational antigenic profiling experiments that use the homologs libraries described in this work.
 
 These instructions are for uploading Illumina barcode sequencing for the expression Sort-seq and ACE2-bindign Tite-seq experiments.
 
@@ -22,7 +22,7 @@ You will now be at the *Sample Type* page, and you have to select the package th
 Click *Microbe*--although we are studying a pathogen it's not a direct clinical sample but an experiment using yeast on a pathogen, which is why we choose this sample type.
 Then click `Continue`.
 Now you enter the sample attributes.
-For the sample name, provide a short name that describes the sample, such as `sarbecovirus_ACE2_profiling`.
+For the sample name, provide a short name that describes the sample, such as `sarbecovirus_MAP_S2V29`.
 Also provide the rest of the information:
 
   - Organism: Severe acute respiratory syndrome-related coronavirus
@@ -31,7 +31,7 @@ Also provide the rest of the information:
 
   - isolation source: plasmid
 
-  - collection date: 2021
+  - collection date: 2024
 
   - geographic location: USA
 
@@ -40,10 +40,10 @@ Also provide the rest of the information:
 Then hit `Continue`.
 You will now be on the page to specify the BioProject.
 We are adding to an existing BioProject, so enter [PRJNA714677](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA714677) as the *Existing BioProject* and hit `Continue`.
-Finally, add a sample title, such as "Illumina barcode sequencing from ACE2 receptor profiling using yeast-displayed sarbecovirus RBDs."
+Finally, add a sample title, such as "Illumina barcode sequencing from mAb breadth profiling using yeast-displayed sarbecovirus RBDs."
 Then hit `Continue`, make sure everything looks correct, then hit `Submit`.
 
-After a brief bit of processing, the *BioSample* submission should show up, along with a sample accession that will be in the format of *SAMN20174027*.
+After a brief bit of processing, the *BioSample* submission should show up, along with a sample accession that will be in the format of *SAMN41715061*.
 Add this sample accession to [upload_config.yaml](upload_config.yaml) as the value for the *biosample_accession* key.
 
 ## Upload the sequencing data
