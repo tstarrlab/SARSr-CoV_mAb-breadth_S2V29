@@ -2,6 +2,8 @@
 
 Study and analysis by Will Foreman, Ashley Taylor, Tyler Starr, and co-authors.
 
+Find the published study [here](https://www.cell.com/cell/fulltext/S0092-8674(24)01084-5).
+
 ## Summary of workflow and results
 For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
 Reading this summary is the best way to understand the analysis.
